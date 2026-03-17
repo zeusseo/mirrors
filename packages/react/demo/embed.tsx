@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Embed } from '../src/Embed';
 import { useMirrorSafeAnimation } from '../src/useMirrorSafeAnimation';
-import { SocketIoTransporter } from '@syncit/transporter';
+import { SocketIoTransporter } from '@mirrors/transporter';
 
 const RELAY_URL = 'http://localhost:3100';
 
@@ -342,7 +342,7 @@ function EmbedPage() {
         </div>
       </div>
 
-      {/* Syncit Embed 패널 */}
+      {/* Mirrors Embed 패널 */}
       <Embed createTransporter={createTransporter} />
     </div>
   );

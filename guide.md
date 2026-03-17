@@ -1,27 +1,27 @@
 # Guide
 
-**Currently, Syncit is at an early development stage. During this stage, API could be changed frequently.**
+**Currently, Mirrors is at an early development stage. During this stage, API could be changed frequently.**
 
 ## Quick Start
 
-Using Syncit needs `@syncit/ui` and `@syncit/transporter`:
+Using Mirrors needs `@mirrors/ui` and `@mirrors/transporter`:
 
 ```
-npm i @syncit/ui @syncit/transporter
+npm i @mirrors/ui @mirrors/transporter
 ```
 
-Import Syncit and use the LocalStorageTransporter：
+Import Mirrors and use the LocalStorageTransporter：
 
 ```js
-import syncit from '@syncit/ui';
-import '@syncit/ui/dist/style.css';
-import { LocalStorageTransporter } from '@syncit/transporter';
+import mirrors from '@mirrors/ui';
+import '@mirrors/ui/dist/style.css';
+import { LocalStorageTransporter } from '@mirrors/transporter';
 ```
 
-Initialize Syncit at the source:
+Initialize Mirrors at the source:
 
 ```js
-new syncit.Embed({
+new mirrors.Embed({
   target: document.body,
   props: {
     createTransporter({ role, uid }) {
@@ -34,10 +34,10 @@ new syncit.Embed({
 });
 ```
 
-Initialize Syncit at the target:
+Initialize Mirrors at the target:
 
 ```js
-new syncit.App({
+new mirrors.App({
   target: document.body,
   props: {
     createTransporter({ role, uid }) {
@@ -53,7 +53,7 @@ new syncit.App({
 Use other transporters:
 
 ```js
-new syncit.App({
+new mirrors.App({
   target: document.body,
   props: {
     createTransporter({ role, uid }) {
@@ -69,7 +69,7 @@ new syncit.App({
 });
 ```
 
-The transporters supported by Syncit：
+The transporters supported by Mirrors：
 
 | name                    | options                             | description                                                                                                  |
 | ----------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |

@@ -1,8 +1,8 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "rrweb-io/syncit" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "rrweb-io/mirrors" }],
   "commit": false,
-  "fixed": [["@syncit/core", "@syncit/transporter", "@syncit/ui"]],
+  "fixed": [["@mirrors/core", "@mirrors/transporter", "@mirrors/ui"]],
   "linked": [],
   "access": "public",
   "baseBranch": "master",

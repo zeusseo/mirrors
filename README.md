@@ -2,24 +2,24 @@
   <img width="100px" height="100px" src="https://user-images.githubusercontent.com/13651389/79969148-a9c57280-84c3-11ea-9063-cb8066a12c66.png">
 </p>
 
-<h1 align="center">Syncit</h1>
+<h1 align="center">Mirrors</h1>
 
 <p align="center">
   프라이버시 중심의 픽셀 퍼펙트 브라우저 코브라우징 — 실시간 화면 공유 & 원격 제어
 </p>
 
 <p align="center">
-  <a href="https://github.com/rrweb-io/syncit/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rrweb-io/syncit" alt="license"></a>
-  <a href="https://www.npmjs.com/package/@syncit/core"><img src="https://img.shields.io/npm/v/@syncit/core" alt="npm version"></a>
+  <a href="https://github.com/rrweb-io/mirrors/blob/main/LICENSE"><img src="https://img.shields.io/github/license/rrweb-io/mirrors" alt="license"></a>
+  <a href="https://www.npmjs.com/package/@mirrors/core"><img src="https://img.shields.io/npm/v/@mirrors/core" alt="npm version"></a>
 </p>
 
 ---
 
-> **⚠️ 초기 개발 단계**: Syncit은 현재 활발히 개발 중이며, API가 예고 없이 변경될 수 있습니다. Issue를 통해 문의와 요청을 환영합니다.
+> **⚠️ 초기 개발 단계**: Mirrors은 현재 활발히 개발 중이며, API가 예고 없이 변경될 수 있습니다. Issue를 통해 문의와 요청을 환영합니다.
 
-## Syncit이란?
+## Mirrors이란?
 
-**Syncit** (_"sync it"_ 의 줄임말)은 [rrweb](https://github.com/rrweb-io/rrweb) 위에 구축된 브라우저 코브라우징 툴킷입니다.
+**Mirrors** (_"sync it"_ 의 줄임말)은 [rrweb](https://github.com/rrweb-io/rrweb) 위에 구축된 브라우저 코브라우징 툴킷입니다.
 
 - **픽셀 퍼펙트 화면 공유** — 영상이 아닌 DOM 스냅샷 + 증분 변경사항을 직렬화하여 전송. 낮은 대역폭, 화질 손실 없음.
 - **원격 제어** — 뷰어가 공유자의 페이지에서 클릭, 스크롤, 입력 가능. 미러링된 DOM을 통해 동작.
@@ -33,7 +33,7 @@
 
 ## 아키텍처
 
-Syncit은 **Source (Embed) → Target (App)** 모델을 따릅니다. Source 측에서 rrweb으로 DOM 이벤트를 기록하고 Transporter를 통해 스트리밍하면, Target 측에서 샌드박스 iframe 내에서 이벤트를 재생합니다.
+Mirrors은 **Source (Embed) → Target (App)** 모델을 따릅니다. Source 측에서 rrweb으로 DOM 이벤트를 기록하고 Transporter를 통해 스트리밍하면, Target 측에서 샌드박스 iframe 내에서 이벤트를 재생합니다.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -74,12 +74,12 @@ Syncit은 **Source (Embed) → Target (App)** 모델을 따릅니다. Source 측
 
 ```
 packages/
-├── core/            # @syncit/core — 버퍼, 상태 머신, 트랜스포터 인터페이스
-├── transporter/     # @syncit/transporter — 전송 계층 구현체
-└── ui/              # @syncit/ui — Svelte 컴포넌트 (App & Embed)
+├── core/            # @mirrors/core — 버퍼, 상태 머신, 트랜스포터 인터페이스
+├── transporter/     # @mirrors/transporter — 전송 계층 구현체
+└── ui/              # @mirrors/ui — Svelte 컴포넌트 (App & Embed)
 ```
 
-### `@syncit/core` (v1.0.2)
+### `@mirrors/core` (v1.0.2)
 
 프레임워크 독립적인 핵심 라이브러리입니다.
 
@@ -92,7 +92,7 @@ packages/
 
 **주요 의존성**: `rrweb`, `rrweb-snapshot`, `@rrweb/types`, `xstate`
 
-### `@syncit/transporter` (v1.0.2)
+### `@mirrors/transporter` (v1.0.2)
 
 플러거블 전송 계층 구현체입니다.
 
@@ -103,7 +103,7 @@ packages/
 | `AgoraRtmTransporter` | [Agora RTM](https://www.agora.io/en/real-time-messaging/) 클라우드 메시징. 대용량 페이로드의 자동 분할/재조립 처리. | `agoraAppId` |
 | `WebSocketTransporter` | 표준 WebSocket. 연결 지연 시 자동 재시도. | `url` |
 
-### `@syncit/ui` (v1.0.2)
+### `@mirrors/ui` (v1.0.2)
 
 Svelte / SvelteKit UI 컴포넌트 및 데모 애플리케이션입니다.
 
@@ -171,14 +171,14 @@ make stop
 패키지 설치:
 
 ```bash
-npm install @syncit/ui @syncit/transporter
+npm install @mirrors/ui @mirrors/transporter
 ```
 
 ### Source 측 (Embed)
 
 ```js
-import { Embed } from '@syncit/ui';
-import { PeerjsTransporter } from '@syncit/transporter';
+import { Embed } from '@mirrors/ui';
+import { PeerjsTransporter } from '@mirrors/transporter';
 
 new Embed({
   target: document.body,
@@ -189,7 +189,7 @@ new Embed({
         uid,
         peerHost: 'localhost',
         peerPort: 9000,
-        peerPath: '/syncit',
+        peerPath: '/mirrors',
       });
     },
   },
@@ -199,8 +199,8 @@ new Embed({
 ### Target 측 (App)
 
 ```js
-import { App } from '@syncit/ui';
-import { PeerjsTransporter } from '@syncit/transporter';
+import { App } from '@mirrors/ui';
+import { PeerjsTransporter } from '@mirrors/transporter';
 
 new App({
   target: document.body,
@@ -211,7 +211,7 @@ new App({
         uid,
         peerHost: 'localhost',
         peerPort: 9000,
-        peerPath: '/syncit',
+        peerPath: '/mirrors',
       });
     },
   },
@@ -221,7 +221,7 @@ new App({
 ### LocalStorage 사용 (테스트용)
 
 ```js
-import { LocalStorageTransporter } from '@syncit/transporter';
+import { LocalStorageTransporter } from '@mirrors/transporter';
 
 // PeerjsTransporter 대신:
 createTransporter({ role, uid }) {
@@ -308,6 +308,6 @@ UI 패키지는 **Vitest**(단위 테스트)와 **Playwright**(E2E 테스트)를
 
 ## 감사의 말
 
-Syncit은 오픈소스 웹 세션 녹화 라이브러리인 [rrweb](https://github.com/rrweb-io/rrweb) 위에 구축되었습니다.
+Mirrors은 오픈소스 웹 세션 녹화 라이브러리인 [rrweb](https://github.com/rrweb-io/rrweb) 위에 구축되었습니다.
 
 원저자: **Yanzhen Yu** ([@nickseegoat](https://github.com/nickseegoat))

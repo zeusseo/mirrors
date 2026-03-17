@@ -1,16 +1,16 @@
-# Syncit 的设计
+# Mirrors 的设计
 
 我们将共享屏幕的一方称为“源端”，将观看共享屏幕、发起远程控制的一方称为“对端”。
 
 ## 屏幕共享
 
-简单来说，Syncit 的基础是在源端将 Web 视图序列化成了一个文本格式的快照，再将可能对 Web 视图产生变化的各类操作都记录成了 op-log。
+简单来说，Mirrors 的基础是在源端将 Web 视图序列化成了一个文本格式的快照，再将可能对 Web 视图产生变化的各类操作都记录成了 op-log。
 
 源端将快照和 op-log 的数据传输至对端，对端只需要重建快照，再依次重放 op-log 中的操作，就可以实现 Web 视图的精确回放。
 
 其中涉及到的[录制](https://github.com/rrweb-io/rrweb/blob/master/docs/observer.zh_CN.md)、[序列化](https://github.com/rrweb-io/rrweb/blob/master/docs/serialization.zh_CN.md)、[回放](https://github.com/rrweb-io/rrweb/blob/master/docs/replay.zh_CN.md)、[沙盒](https://github.com/rrweb-io/rrweb/blob/master/docs/sandbox.zh_CN.md)等细节可以查看更详细的设计文档。
 
-进一步地，要实现直播的效果，Syncit 还实现了 buffer, transporter 等组件，示意图如下：
+进一步地，要实现直播的效果，Mirrors 还实现了 buffer, transporter 等组件，示意图如下：
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/13651389/79969241-ca8dc800-84c3-11ea-9090-82e239382d8b.png">
@@ -58,15 +58,15 @@ event_3 @1096
 
 ### 传输层
 
-源端和对端之间需要进行通信，在 Syncit 中这部分被抽象为一个通用的传输层。Syncit 规定了一个传输层需要实现哪些语义，但并不限制传输层的具体实现方式。
+源端和对端之间需要进行通信，在 Mirrors 中这部分被抽象为一个通用的传输层。Mirrors 规定了一个传输层需要实现哪些语义，但并不限制传输层的具体实现方式。
 
-例如我们目前在 Syncit 中内置了以下几种传输层实现：
+例如我们目前在 Mirrors 中内置了以下几种传输层实现：
 
 - 基于 local-storage 的实现，用于 Demo 和测试。
 - 基于 [Peerjs](https://github.com/peers/peerjs) 的实现。
 - 基于 [Agora RTM](https://www.agora.io/en/real-time-messaging/) 的实现。
 
-使用时只需要将所需的传输层提供给 Syncit 即可。
+使用时只需要将所需的传输层提供给 Mirrors 即可。
 
 ## 远程控制
 

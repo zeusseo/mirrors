@@ -1,13 +1,13 @@
 <script lang="typescript">
-	import * as syncit from '$lib/index';
-	import * as syncitTransporter from '@syncit/transporter';
+	import * as mirrors from '$lib/index';
+	import * as mirrorsTransporter from '@mirrors/transporter';
 
-	new syncit.App({
+	new mirrors.App({
 		target: document.body,
 		props: {
 			bufferMs: 100,
 			createTransporter({ uid }) {
-				return new syncitTransporter.SocketIoTransporter({
+				return new mirrorsTransporter.SocketIoTransporter({
 					uid,
 					role: 'app',
 					url: 'http://localhost:3100',

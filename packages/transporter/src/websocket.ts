@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { eventWithTime } from '@rrweb/types';
-import { Chunk, RemoteControlPayload } from '@syncit/core';
+import { Chunk, RemoteControlPayload } from '@mirrors/core';
 import {
   Transporter,
   TransporterEvents,
   TransporterEventHandler,
   TransporterHandlers,
-} from '@syncit/core';
+} from '@mirrors/core';
 
 export class WebSocketTransporter implements Transporter {
   handlers: TransporterHandlers = {

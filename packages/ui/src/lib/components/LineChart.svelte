@@ -19,14 +19,14 @@
 	$: path = `M${points.map((p) => `${xScale(p.x)},${yScale(p.y)}`).join('L')}`;
 </script>
 
-<div class="syncit-chart" bind:clientWidth={width} bind:clientHeight={height}>
+<div class="mirrors-chart" bind:clientWidth={width} bind:clientHeight={height}>
 	<svg>
 		<path class="path-line" d={path} stroke={color} />
 	</svg>
 </div>
 
 <style>
-	.syncit-chart {
+	.mirrors-chart {
 		width: 100%;
 		height: 30px;
 	}

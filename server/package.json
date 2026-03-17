@@ -1,8 +1,8 @@
 {
-  "name": "@syncit/server",
+  "name": "@mirrors/server",
   "version": "1.0.0",
   "private": true,
-  "description": "Syncit Socket.IO relay server",
+  "description": "Mirrors Socket.IO relay server",
   "main": "socketio-relay.js",
   "scripts": {
     "start": "node socketio-relay.js"

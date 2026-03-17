@@ -1,11 +1,11 @@
 <script></script>
 
-<span class="syncit-tag" on:mouseover on:mouseout on:click on:blur on:focus on:keypress>
+<span class="mirrors-tag" on:mouseover on:mouseout on:click on:blur on:focus on:keypress>
 	<slot />
 </span>
 
 <style>
-	.syncit-tag {
+	.mirrors-tag {
 		padding: 2px 8px;
 		font-size: 13px;
 		line-height: 20px;

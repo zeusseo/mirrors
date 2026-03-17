@@ -43,7 +43,7 @@ export default [
       {
         file: pkg.unpkg,
         format: 'iife',
-        name: 'syncitTransporter',
+        name: 'mirrorsTransporter',
         plugins: sharedConfig.plugins.concat(terser()),
       },
       {

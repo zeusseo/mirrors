@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Embed } from '../src/Embed';
 import { App } from '../src/App';
-import { SocketIoTransporter } from '@syncit/transporter';
+import { SocketIoTransporter } from '@mirrors/transporter';
 
 const RELAY_URL = 'http://localhost:3100';
 
@@ -16,7 +16,7 @@ function Demo() {
   if (mode === 'select') {
     return (
       <div style={styles.selectContainer}>
-        <h1 style={styles.heading}>Syncit React Demo</h1>
+        <h1 style={styles.heading}>Mirrors React Demo</h1>
         <p style={styles.subtext}>React에서의 실시간 화면 공유</p>
         <div style={styles.buttonGroup}>
           <button onClick={() => setMode('embed')} style={styles.embedBtn}>

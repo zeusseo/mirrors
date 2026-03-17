@@ -7,7 +7,7 @@ import {
   createEmbedService,
   type Transporter,
   type TransportAckRecordEvent,
-} from '@syncit/core';
+} from '@mirrors/core';
 import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('1234567890abcdef', 10);
@@ -88,7 +88,7 @@ export function Embed({ createTransporter }: EmbedProps) {
       <div style={styles.panel}>
         <div style={styles.header}>
           <span style={styles.dot(state === 'connected' ? '#4ade80' : state === 'ready' ? '#fbbf24' : '#94a3b8')} />
-          <span style={styles.title}>Syncit Embed</span>
+          <span style={styles.title}>Mirrors Embed</span>
         </div>
         <div style={styles.body}>
           <div style={styles.row}>

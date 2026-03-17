@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '../src/App';
-import { SocketIoTransporter } from '@syncit/transporter';
+import { SocketIoTransporter } from '@mirrors/transporter';
 
 const RELAY_URL = 'http://localhost:3100';
 

@@ -48,12 +48,12 @@
 	}
 </script>
 
-<div id="syncit-pdf" bind:this={ref}>
+<div id="mirrors-pdf" bind:this={ref}>
 	<slot />
 </div>
 
 <style>
-	#syncit-pdf {
+	#mirrors-pdf {
 		position: fixed;
 		left: 20px;
 		top: 20px;

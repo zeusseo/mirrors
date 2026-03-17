@@ -1,7 +1,7 @@
 {
-  "name": "@syncit/react",
+  "name": "@mirrors/react",
   "version": "1.0.0",
-  "description": "Syncit React components — screen sharing Embed & App",
+  "description": "Mirrors React components — screen sharing Embed & App",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -11,8 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@syncit/core": "^1.0.2",
-    "@syncit/transporter": "^1.0.2",
+    "@mirrors/core": "^1.0.2",
+    "@mirrors/transporter": "^1.0.2",
     "nanoid": "^4.0.1",
     "rrweb": "^2.0.0-alpha.20"
   },

@@ -1,16 +1,16 @@
-# The design of Syncit
+# The design of Mirrors
 
 In this documentation, we will call the user who shares the screen as 'the source', and the user who watches the screen sharing as 'the target'.
 
 ## Screen Sharing
 
-The fundamental function of Syncit's screen sharing is to serialize the view of a web page into a snapshot at the source, continuously observe the mutations that can change the view and put them into an op-log.
+The fundamental function of Mirrors's screen sharing is to serialize the view of a web page into a snapshot at the source, continuously observe the mutations that can change the view and put them into an op-log.
 
 The source will transfer the snapshot and op-log to the target. The target simply rebuilds the snapshot and 'casts' the mutations in the op-log, which will make the view at the target side look the same as the source side.
 
 Some further details about [observe](https://github.com/rrweb-io/rrweb/blob/master/docs/observer.md), [serialize](https://github.com/rrweb-io/rrweb/blob/master/docs/serialization.md)、[replay](https://github.com/rrweb-io/rrweb/blob/master/docs/replay.md) and [sandbox](https://github.com/rrweb-io/rrweb/blob/master/docs/sandbox.md) can be found in rrweb's design docs.
 
-Further more, Syncit implements the buffer and transporter components to support the live screen sharing. The architect is shown below:
+Further more, Mirrors implements the buffer and transporter components to support the live screen sharing. The architect is shown below:
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/13651389/79969241-ca8dc800-84c3-11ea-9090-82e239382d8b.png">
@@ -58,9 +58,9 @@ The buffer component also checks whether there are some missing chunks in the op
 
 ### The Transporter Component
 
-Syncit abstracts data layer between the source and the target as a generic transporter component. The transporter component only defines the interface, and can be implemented in any way.
+Mirrors abstracts data layer between the source and the target as a generic transporter component. The transporter component only defines the interface, and can be implemented in any way.
 
-For example, we have already implemented several transporter components in Syncit:
+For example, we have already implemented several transporter components in Mirrors:
 
 - The local-storage transporter, which is good for testing and demo。
 - The [Peerjs](https://github.com/peers/peerjs) transporter。
@@ -68,9 +68,9 @@ For example, we have already implemented several transporter components in Synci
 
 ## Remote Control
 
-The remote control is implemented on the base of screen sharing. During screen sharing, we've already rebuilt the snapshot at the target as a sandboxed view. When remote control is enabled, Syncit will listen to the interactions at the target side and transfer them to the source.
+The remote control is implemented on the base of screen sharing. During screen sharing, we've already rebuilt the snapshot at the target as a sandboxed view. When remote control is enabled, Mirrors will listen to the interactions at the target side and transfer them to the source.
 
-Syncit maintains a DOM map between the source and the target, so we can simply transfer a serializable data like `{ action: 'click', id: 1 }` to the source, and it will know which DOM element was clicked.
+Mirrors maintains a DOM map between the source and the target, so we can simply transfer a serializable data like `{ action: 'click', id: 1 }` to the source, and it will know which DOM element was clicked.
 
 ### An Example
 

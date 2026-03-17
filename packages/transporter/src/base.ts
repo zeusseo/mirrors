@@ -3,5 +3,5 @@ export type {
   Transporter,
   TransporterEventHandler,
   TransporterHandlers,
-} from '@syncit/core';
-export { TransporterEvents } from '@syncit/core';
+} from '@mirrors/core';
+export { TransporterEvents } from '@mirrors/core';

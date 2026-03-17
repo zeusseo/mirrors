@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { eventWithTime } from '@rrweb/types';
-import { Chunk, RemoteControlPayload } from '@syncit/core';
+import { Chunk, RemoteControlPayload } from '@mirrors/core';
 import AgoraRTM from 'agora-rtm-sdk';
 import {
   type Transporter,
   TransporterEvents,
   TransporterEventHandler,
   TransporterHandlers,
-} from '@syncit/core';
+} from '@mirrors/core';
 
 export type AgoraRtmTransporterOptions = {
   agoraAppId: string;

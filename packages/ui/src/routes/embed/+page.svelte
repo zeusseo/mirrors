@@ -1,12 +1,12 @@
 <script lang="typescript" type="module">
 	import { Embed } from '$lib/index';
-	import * as syncitTransporter from '@syncit/transporter';
+	import * as mirrorsTransporter from '@mirrors/transporter';
 
 	new Embed({
 		target: document.body,
 		props: {
 			createTransporter({ uid }) {
-				return new syncitTransporter.SocketIoTransporter({
+				return new mirrorsTransporter.SocketIoTransporter({
 					uid,
 					role: 'embed',
 					url: 'http://localhost:3100',

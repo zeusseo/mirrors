@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import { CustomEventTags } from '@syncit/core';
+import { CustomEventTags } from '@mirrors/core';
 
 export default function createCanvas({
 	width,
@@ -26,7 +26,7 @@ export default function createCanvas({
 
 		constructor({ width, height }: { width: number; height: number }) {
 			this.stage = new Konva.Stage({
-				container: 'syncit-canvas',
+				container: 'mirrors-canvas',
 				width,
 				height
 			});

@@ -1,9 +1,9 @@
 {
-  "name": "@syncit/core",
+  "name": "@mirrors/core",
   "version": "1.0.2",
-  "description": "syncit core modules",
+  "description": "mirrors core modules",
   "author": "Yanzhen Yu <yanzhen@smartx.com>",
-  "homepage": "https://github.com/rrweb-io/syncit#readme",
+  "homepage": "https://github.com/rrweb-io/mirrors#readme",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -25,7 +25,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rrweb-io/syncit.git"
+    "url": "git+https://github.com/rrweb-io/mirrors.git"
   },
   "scripts": {
     "test": "jest",
@@ -35,7 +35,7 @@
     "prepublish": "yarn build && yarn typings"
   },
   "bugs": {
-    "url": "https://github.com/rrweb-io/syncit/issues"
+    "url": "https://github.com/rrweb-io/mirrors/issues"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.0.1",

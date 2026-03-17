@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { io, Socket } from 'socket.io-client';
 import { eventWithTime } from '@rrweb/types';
-import { Chunk, RemoteControlPayload } from '@syncit/core';
+import { Chunk, RemoteControlPayload } from '@mirrors/core';
 import {
   type Transporter,
   TransporterEvents,
   type TransporterEventHandler,
   type TransporterHandlers,
-} from '@syncit/core';
+} from '@mirrors/core';
 
 export type SocketIoTransporterOptions = {
   url: string;
@@ -44,7 +44,7 @@ export class SocketIoTransporter implements Transporter {
       this.socket.emit('join', { uid: this.uid, role: this.role });
     });
 
-    this.socket.on('syncit', (data: { event: TransporterEvents; payload?: unknown }) => {
+    this.socket.on('mirrors', (data: { event: TransporterEvents; payload?: unknown }) => {
       this.handlers[data.event].map(h =>
         h({
           event: data.event,
@@ -55,7 +55,7 @@ export class SocketIoTransporter implements Transporter {
   }
 
   private send(params: { event: TransporterEvents; payload?: unknown }) {
-    this.socket.emit('syncit', params);
+    this.socket.emit('mirrors', params);
   }
 
   login(): Promise<boolean> {

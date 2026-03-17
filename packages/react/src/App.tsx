@@ -8,7 +8,7 @@ import {
   createAppService,
   type Transporter,
   type TransportSendRecordEvent,
-} from '@syncit/core';
+} from '@mirrors/core';
 
 interface AppProps {
   createTransporter: (opts: { role: string; uid: string }) => Transporter;
@@ -72,7 +72,7 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
         loadTimeout: 100,
         liveMode: true,
         insertStyleRules: [
-          '.syncit-embed { display: none !important }',
+          '.mirrors-embed { display: none !important }',
           `.replayer-mouse {
             width: 40px !important;
             height: 40px !important;

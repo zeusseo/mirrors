@@ -30,18 +30,18 @@ io.on('connection', (socket) => {
     console.log(`[join] ${socket.id} → room:${uid} (${role})`);
   });
 
-  socket.on('syncit', (data) => {
+  socket.on('mirrors', (data) => {
     const { uid, role } = socket.data;
     if (!uid) return;
 
     if (role === 'embed') {
       // Embed → broadcast to ALL Apps in the room
-      socket.to(uid).emit('syncit', data);
+      socket.to(uid).emit('mirrors', data);
     } else {
       // App → send ONLY to the Embed socket (not to other Apps)
       const embedSocketId = embedSockets.get(uid);
       if (embedSocketId) {
-        io.to(embedSocketId).emit('syncit', data);
+        io.to(embedSocketId).emit('mirrors', data);
       }
     }
   });
@@ -56,5 +56,5 @@ io.on('connection', (socket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Syncit Socket.IO relay server listening on port ${PORT}`);
+  console.log(`Mirrors Socket.IO relay server listening on port ${PORT}`);
 });

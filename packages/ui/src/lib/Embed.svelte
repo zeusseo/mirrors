@@ -9,7 +9,7 @@
 		type TransportAckRecordEvent,
 		type Transporter,
 		type TransportRemoteControlEvent
-	} from '@syncit/core';
+	} from '@mirrors/core';
 	import {
 		applyMirrorAction,
 		SourceBuffer,
@@ -18,7 +18,7 @@
 		RemoteControlActions,
 		CustomEventTags,
 		type MirrorPayload
-	} from '@syncit/core';
+	} from '@mirrors/core';
 	import { customAlphabet } from 'nanoid';
 	import copy from 'copy-to-clipboard';
 	import Panel from './components/Panel.svelte';
@@ -240,7 +240,7 @@
 	});
 </script>
 
-<div class="syncit-embed" bind:this={ref}>
+<div class="mirrors-embed" bind:this={ref}>
 	{#if open}
 		<div
 			transition:scale={{ duration: 500, opacity: 0.5, easing: quintOut }}
@@ -248,18 +248,18 @@
 		>
 			<Panel>
 				{#await login}
-					<div class="syncit-center syncit-load-text">
+					<div class="mirrors-center mirrors-load-text">
 						{t('embed.initializing')}...
 					</div>
 				{:then}
 					<!-- -->
 					{#if current.matches('idle')}
-						<div class="syncit-center">
-							<div class="syncit-panel-control">
-								<button class="syncit-btn ordinary" on:click={handleSelectBlock}>
+						<div class="mirrors-center">
+							<div class="mirrors-panel-control">
+								<button class="mirrors-btn ordinary" on:click={handleSelectBlock}>
 									{selecting ? t('embed.cancel') : t('embed.selectBlockArea')}
 								</button>
-								<div class="syncit-block-els">
+								<div class="mirrors-block-els">
 									{#each blockEls as el, idx}
 										<Tag
 											on:mouseover={() => highlight(el)}
@@ -271,34 +271,34 @@
 									{/each}
 								</div>
 							</div>
-							<button class="syncit-btn" on:click={() => service.send('START')}>
+							<button class="mirrors-btn" on:click={() => service.send('START')}>
 								{t('embed.enableShare')}
 							</button>
 						</div>
 					{:else if current.matches('ready')}
-						<div class="syncit-center syncit-load-text">
-							<div class="syncit-panel-meta">
+						<div class="mirrors-center mirrors-load-text">
+							<div class="mirrors-panel-meta">
 								{#if copied}
 									{t('embed.copied')}
 									<!---->
 								{:else}
 									UID:
 									{uid}
-									<span class="syncit-copy" on:click={copyUid} on:keypress={copyUid}>
+									<span class="mirrors-copy" on:click={copyUid} on:keypress={copyUid}>
 										<Icon name="copy" />
 									</span>
 								{/if}
 							</div>
-							<div class="syncit-load-text">{t('embed.ready')}</div>
+							<div class="mirrors-load-text">{t('embed.ready')}</div>
 						</div>
 					{:else if current.matches('connected')}
-						<div class="syncit-center">
-							<div class="syncit-panel-control">
-								<button class="syncit-btn ordinary" on:click={togglePaint}
+						<div class="mirrors-center">
+							<div class="mirrors-panel-control">
+								<button class="mirrors-btn ordinary" on:click={togglePaint}
 									>{painting ? t('embed.stopPaint') : t('embed.paint')}</button
 								>
 								{#if painting}
-									<div class="syncit-painting-config">
+									<div class="mirrors-painting-config">
 										<div>
 											<label for="Stroke">Stroke:</label>
 											{paintingConfig.stroke}
@@ -346,10 +346,10 @@
 									style="overflow: hidden;display:block;width:100%;"
 								/>
 								<p>{t('embed.mouseSize')}</p>
-								<div class="syncit-mouses">
+								<div class="mirrors-mouses">
 									{#each [t('embed.small'), t('embed.medium'), t('embed.large')] as size, idx}
 										<button
-											class="{`syncit-mouse-${idx + 1}`} syncit-btn ordinary"
+											class="{`mirrors-mouse-${idx + 1}`} mirrors-btn ordinary"
 											on:click={() => changeMouseSize(idx + 1)}
 										>
 											{size}
@@ -372,35 +372,35 @@
 								</p>
 								{#if controlCurrent.matches('requesting')}
 									<button
-										class="syncit-btn ordinary"
+										class="mirrors-btn ordinary"
 										on:click={() => controlService.send('ACCEPT')}
 									>
 										{t('embed.accept')}
 									</button>
 								{:else if controlCurrent.matches('controlled')}
-									<button class="syncit-btn ordinary" on:click={stopRemoteControl}>
+									<button class="mirrors-btn ordinary" on:click={stopRemoteControl}>
 										{t('embed.abortControl')}
 									</button>
 								{/if}
 							</div>
-							<button class="syncit-btn" on:click={() => service.send('STOP')}>
+							<button class="mirrors-btn" on:click={() => service.send('STOP')}>
 								{t('embed.abort')}
 							</button>
 						</div>
 					{/if}
 					<!---->
 				{:catch error}
-					<div class="syncit-center syncit-error">{error.message}</div>
+					<div class="mirrors-center mirrors-error">{error.message}</div>
 				{/await}
 			</Panel>
 		</div>
 	{/if}
 	<!---->
-	<button class="syncit-toggle syncit-btn" on:click={() => (open = !open)}>
+	<button class="mirrors-toggle mirrors-btn" on:click={() => (open = !open)}>
 		<Icon name={open ? 'close' : 'team'} />
 	</button>
 	<!---->
-	<div bind:this={mask} class="syncit-mask" />
+	<div bind:this={mask} class="mirrors-mask" />
 </div>
 
 {#if painting}
@@ -409,7 +409,7 @@
 
 {#if sharingPDF}
 	<PDF bind:this={pdfEl}>
-		<button class="syncit-toggle syncit-btn" on:click={closePDF}>
+		<button class="mirrors-toggle mirrors-btn" on:click={closePDF}>
 			<Icon name="close" />
 		</button>
 	</PDF>
@@ -420,7 +420,7 @@
 		outline: none;
 	}
 
-	.syncit-embed {
+	.mirrors-embed {
 		position: fixed;
 		right: 1em;
 		bottom: 1em;
@@ -429,12 +429,12 @@
 		z-index: 9999;
 	}
 
-	.syncit-btn:hover {
+	.mirrors-btn:hover {
 		background: #3399ff;
 	}
 
-	.syncit-btn,
-	.syncit-btn:active {
+	.mirrors-btn,
+	.mirrors-btn:active {
 		cursor: pointer;
 		background: #0078f0;
 		border: 1px solid rgba(62, 70, 82, 0.18);
@@ -447,20 +447,20 @@
 		margin-bottom: 0.5em;
 	}
 
-	.syncit-btn.ordinary {
+	.mirrors-btn.ordinary {
 		background: #fff;
 		color: #3e4652;
 		border: 1px solid rgba(129, 138, 153, 0.6);
 	}
-	.syncit-btn.ordinary:hover {
+	.mirrors-btn.ordinary:hover {
 		background: #f5f7fa;
 	}
-	.syncit-btn.ordinary:active {
+	.mirrors-btn.ordinary:active {
 		background: #dfe4eb;
 	}
 
-	.syncit-toggle,
-	.syncit-toggle:active {
+	.mirrors-toggle,
+	.mirrors-toggle:active {
 		width: 40px;
 		height: 40px;
 		line-height: 40px;
@@ -469,7 +469,7 @@
 		align-self: flex-end;
 	}
 
-	.syncit-center {
+	.mirrors-center {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -478,7 +478,7 @@
 		flex-direction: column;
 	}
 
-	.syncit-painting-config {
+	.mirrors-painting-config {
 		border-bottom: 1px solid rgba(235, 239, 245, 0.8);
 		padding-bottom: 5px;
 		margin-bottom: 5px;
@@ -487,17 +487,17 @@
 		align-items: flex-start;
 	}
 
-	.syncit-load-text {
+	.mirrors-load-text {
 		font-size: 14px;
 		line-height: 22px;
 		color: #3e4652;
 	}
 
-	.syncit-error {
+	.mirrors-error {
 		color: #e75a3a;
 	}
 
-	.syncit-mask {
+	.mirrors-mask {
 		position: fixed;
 		left: 0;
 		top: 0;
@@ -508,7 +508,7 @@
 		display: none;
 	}
 
-	.syncit-panel-control {
+	.mirrors-panel-control {
 		display: flex;
 		flex-direction: column;
 		flex: 1;
@@ -518,7 +518,7 @@
 		margin-bottom: 8px;
 	}
 
-	.syncit-panel-meta {
+	.mirrors-panel-meta {
 		padding-bottom: 4px;
 		margin-bottom: 4px;
 		display: flex;
@@ -526,7 +526,7 @@
 		justify-content: center;
 	}
 
-	.syncit-copy {
+	.mirrors-copy {
 		cursor: pointer;
 		display: inline-block;
 		width: 16px;
@@ -534,22 +534,22 @@
 		margin-left: 4px;
 	}
 
-	.syncit-copy:hover {
+	.mirrors-copy:hover {
 		opacity: 0.8;
 	}
 
-	.syncit-block-els {
+	.mirrors-block-els {
 		display: flex;
 		overflow: auto;
 		word-break: keep-all;
 	}
 
-	.syncit-block-els > :global(span) {
+	.mirrors-block-els > :global(span) {
 		cursor: pointer;
 		margin-right: 4px;
 	}
 
-	.syncit-mouses {
+	.mirrors-mouses {
 		display: flex;
 		justify-content: space-around;
 		align-items: center;

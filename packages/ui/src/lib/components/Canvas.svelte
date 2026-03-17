@@ -2,7 +2,7 @@
 	import Konva from 'konva';
 	import { onMount } from 'svelte';
 	import { record } from 'rrweb';
-	import { CustomEventTags } from '@syncit/core';
+	import { CustomEventTags } from '@mirrors/core';
 
 	export let role = 'master';
 	export let mode: string;
@@ -18,7 +18,7 @@
 	class Canvas {
 		constructor({ width, height }: { width: number; height: number }) {
 			stage = new Konva.Stage({
-				container: 'syncit-canvas',
+				container: 'mirrors-canvas',
 				width,
 				height
 			});
@@ -99,7 +99,7 @@
 			width: `${2 * strokeWidth}px`,
 			height: `${2 * strokeWidth}px`,
 			borderRadius: `${strokeWidth}px`,
-			animation: 'syncit-highlight 1000ms ease-out'
+			animation: 'mirrors-highlight 1000ms ease-out'
 		});
 		ref.appendChild(highlightEl);
 		setTimeout(() => {
@@ -144,10 +144,10 @@
 	});
 </script>
 
-<div id="syncit-canvas" bind:this={ref} />
+<div id="mirrors-canvas" bind:this={ref} />
 
 <style>
-	#syncit-canvas {
+	#mirrors-canvas {
 		position: fixed;
 		left: 0;
 		top: 0;
@@ -155,7 +155,7 @@
 		bottom: 0;
 	}
 
-	@keyframes -global-syncit-highlight {
+	@keyframes -global-mirrors-highlight {
 		0% {
 			transform: scale(1);
 			opacity: 0.5;

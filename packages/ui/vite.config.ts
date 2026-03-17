@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode }) => {
 			minify: false,
 			lib: {
 				entry: './src/lib/index.ts',
-				name: 'syncit'
+				name: 'mirrors'
 			}
 		};
 		plugins = [

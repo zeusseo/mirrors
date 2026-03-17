@@ -4,7 +4,7 @@
 	import type { customEvent, eventWithTime } from '@rrweb/types';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';
-	import { TransporterEvents, type Transporter, type TransportSendRecordEvent } from '@syncit/core';
+	import { TransporterEvents, type Transporter, type TransportSendRecordEvent } from '@mirrors/core';
 	import {
 		MirrorBuffer,
 		CustomEventTags,
@@ -13,7 +13,7 @@
 		createAppService,
 		createAppControlService,
 		type Chunk
-	} from '@syncit/core';
+	} from '@mirrors/core';
 	import Panel from './components/Panel.svelte';
 	import LineChart from './components/LineChart.svelte';
 	import Icon from './components/Icon.svelte';
@@ -86,7 +86,7 @@
 				loadTimeout: 100,
 				liveMode: true,
 				insertStyleRules: [
-					'.syncit-embed, #syncit-canvas, #syncit-pdf { display: none !important }'
+					'.mirrors-embed, #mirrors-canvas, #mirrors-pdf { display: none !important }'
 				],
 				showWarning: true,
 				showDebug: true,
@@ -153,7 +153,7 @@
 						latencies = latencies.concat({ x: t, y: Date.now() - t });
 						break;
 					case CustomEventTags.MouseSize:
-						mouseSize = `syncit-mouse-s${
+						mouseSize = `mirrors-mouse-s${
 							(event as customEvent<{ level: number }>).data.payload.level
 						}`;
 						break;
@@ -245,7 +245,7 @@
 		sizes = sizes;
 	}
 
-	let mouseSize = 'syncit-mouse-s2';
+	let mouseSize = 'mirrors-mouse-s2';
 
 	onMount(() => {
 		service.start();
@@ -259,13 +259,13 @@
 	});
 </script>
 
-<div class="syncit-app {mouseSize}">
+<div class="mirrors-app {mouseSize}">
 	<div bind:this={playerDom} />
 	{#if current.matches('idle')}
 		<!---->
 		{#if !login}
-			<div class="syncit-center">
-				<div class="syncit-load-text syncit-hint align-center">
+			<div class="mirrors-center">
+				<div class="mirrors-load-text mirrors-hint align-center">
 					<label>
 						remote UID:
 						<input
@@ -274,7 +274,7 @@
 							on:keydown={(e) => e.code === 'Enter' && uid && init()}
 						/>
 					</label>
-					<button class="syncit-btn" on:click={init} disabled={!uid}>
+					<button class="mirrors-btn" on:click={init} disabled={!uid}>
 						{t('app.connect')}
 					</button>
 				</div>
@@ -282,13 +282,13 @@
 		{:else}
 			<!---->
 			{#await login}
-				<div class="syncit-load-text syncit-center">
+				<div class="mirrors-load-text mirrors-center">
 					{t('app.initializing')}...
 				</div>
 			{:then}
 				<!---->
 			{:catch error}
-				<div class="syncit-error syncit-center">{error.message}</div>
+				<div class="mirrors-error mirrors-center">{error.message}</div>
 			{/await}
 			<!---->
 		{/if}
@@ -296,52 +296,52 @@
 	{/if}
 	<!---->
 	{#if current.matches('waiting_first_record')}
-		<div class="syncit-load-text syncit-center">{t('app.ready')}</div>
+		<div class="mirrors-load-text mirrors-center">{t('app.ready')}</div>
 	{:else if current.matches('connected')}
-		<div class="syncit-app-control">
+		<div class="mirrors-app-control">
 			{#if open}
 				<div
 					transition:scale={{ duration: 500, opacity: 0.5, easing: quintOut }}
 					style="transform-origin: right bottom;"
 				>
 					<Panel>
-						<div class="syncit-metric">
-							<div class="syncit-chart-title">
+						<div class="mirrors-metric">
+							<div class="mirrors-chart-title">
 								{t('app.latency')}
 								<span style="color: #41efc5;">
 									{_latencies.length ? _latencies[_latencies.length - 1].y : '-'}
 									ms
 								</span>
 							</div>
-							<div class="syncit-metric-line">
+							<div class="mirrors-metric-line">
 								<LineChart points={_latencies} />
 							</div>
 						</div>
-						<div class="syncit-metric">
-							<div class="syncit-chart-title">
+						<div class="mirrors-metric">
+							<div class="mirrors-chart-title">
 								{t('app.bandwidth')}
 								<span style="color: #8c83ed;">
 									{lastSize.value}
 									{lastSize.unit}
 								</span>
 							</div>
-							<div class="syncit-metric-line">
+							<div class="mirrors-metric-line">
 								<LineChart points={_sizes} color="#8C83ED" />
 							</div>
 						</div>
 						<div>
 							<p>{t('app.remoteControl')}</p>
 							{#if controlCurrent.matches('not_control')}
-								<button class="syncit-btn ordinary" on:click={() => controlService.send('REQUEST')}>
+								<button class="mirrors-btn ordinary" on:click={() => controlService.send('REQUEST')}>
 									{t('app.requestToControl')}
 								</button>
 							{:else if controlCurrent.matches('requested')}
-								<button class="syncit-btn ordinary" disabled>
+								<button class="mirrors-btn ordinary" disabled>
 									{t('app.requested')}
 								</button>
 							{:else if controlCurrent.matches('controlling')}
 								<button
-									class="syncit-btn ordinary"
+									class="mirrors-btn ordinary"
 									on:click={() => controlService.send('STOP_CONTROL')}
 								>
 									{t('app.stopControl')}
@@ -352,15 +352,15 @@
 				</div>
 			{/if}
 			<!---->
-			<button class="syncit-toggle syncit-btn" on:click={() => (open = !open)}>
+			<button class="mirrors-toggle mirrors-btn" on:click={() => (open = !open)}>
 				<Icon name={open ? 'close' : 'team'} />
 			</button>
 		</div>
 	{:else if current.matches('stopped')}
-		<div class="syncit-center">
-			<div class="syncit-load-text syncit-hint">
+		<div class="mirrors-center">
+			<div class="mirrors-load-text mirrors-hint">
 				<div>{t('app.aborted')}</div>
-				<button class="syncit-btn" on:click={reset} style="display: block; margin: 0.5em auto;">
+				<button class="mirrors-btn" on:click={reset} style="display: block; margin: 0.5em auto;">
 					{t('app.reset')}
 				</button>
 			</div>
@@ -402,15 +402,15 @@
 		background-repeat: no-repeat;
 		background-image: url('data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9JzMwMHB4JyB3aWR0aD0nMzAwcHgnICBmaWxsPSIjMDAwMDAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGRhdGEtbmFtZT0iTGF5ZXIgMSIgdmlld0JveD0iMCAwIDUwIDUwIiB4PSIwcHgiIHk9IjBweCI+PHRpdGxlPkRlc2lnbl90bnA8L3RpdGxlPjxwYXRoIGQ9Ik00OC43MSw0Mi45MUwzNC4wOCwyOC4yOSw0NC4zMywxOEExLDEsMCwwLDAsNDQsMTYuMzlMMi4zNSwxLjA2QTEsMSwwLDAsMCwxLjA2LDIuMzVMMTYuMzksNDRhMSwxLDAsMCwwLDEuNjUuMzZMMjguMjksMzQuMDgsNDIuOTEsNDguNzFhMSwxLDAsMCwwLDEuNDEsMGw0LjM4LTQuMzhBMSwxLDAsMCwwLDQ4LjcxLDQyLjkxWm0tNS4wOSwzLjY3TDI5LDMyYTEsMSwwLDAsMC0xLjQxLDBsLTkuODUsOS44NUwzLjY5LDMuNjlsMzguMTIsMTRMMzIsMjcuNThBMSwxLDAsMCwwLDMyLDI5TDQ2LjU5LDQzLjYyWiI+PC9wYXRoPjwvc3ZnPg==');
 	}
-	.syncit-mouse-s1 :global(.replayer-mouse) {
+	.mirrors-mouse-s1 :global(.replayer-mouse) {
 		width: 10px;
 		height: 10px;
 	}
-	.syncit-mouse-s2 :global(.replayer-mouse) {
+	.mirrors-mouse-s2 :global(.replayer-mouse) {
 		width: 20px;
 		height: 20px;
 	}
-	.syncit-mouse-s3 :global(.replayer-mouse) {
+	.mirrors-mouse-s3 :global(.replayer-mouse) {
 		width: 30px;
 		height: 30px;
 	}
@@ -445,7 +445,7 @@
 		}
 	}
 
-	.syncit-app {
+	.mirrors-app {
 		width: 100%;
 		height: 100%;
 	}
@@ -453,12 +453,12 @@
 	button {
 		outline: none;
 	}
-	.syncit-btn:hover {
+	.mirrors-btn:hover {
 		background: #3399ff;
 	}
 
-	.syncit-btn,
-	.syncit-btn:active {
+	.mirrors-btn,
+	.mirrors-btn:active {
 		cursor: pointer;
 		background: #0078f0;
 		border: 1px solid rgba(62, 70, 82, 0.18);
@@ -471,24 +471,24 @@
 		margin-bottom: 0.5em;
 	}
 
-	.syncit-btn.ordinary {
+	.mirrors-btn.ordinary {
 		background: #fff;
 		color: #3e4652;
 		border: 1px solid rgba(129, 138, 153, 0.6);
 	}
-	.syncit-btn.ordinary:hover {
+	.mirrors-btn.ordinary:hover {
 		background: #f5f7fa;
 	}
-	.syncit-btn.ordinary:active {
+	.mirrors-btn.ordinary:active {
 		background: #dfe4eb;
 	}
 
-	.syncit-btn:disabled {
+	.mirrors-btn:disabled {
 		cursor: not-allowed;
 		opacity: 0.5;
 	}
 
-	.syncit-center {
+	.mirrors-center {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -497,29 +497,29 @@
 		flex-direction: column;
 	}
 
-	.syncit-load-text {
+	.mirrors-load-text {
 		font-size: 14px;
 		line-height: 22px;
 		color: #3e4652;
 	}
 
-	/* .syncit-load-text h3 {
+	/* .mirrors-load-text h3 {
 		margin: 8px 0;
 	} */
 
-	.syncit-error {
+	.mirrors-error {
 		color: #e75a3a;
 	}
 
-	.syncit-hint {
+	.mirrors-hint {
 		background: rgba(245, 247, 250);
 		border-radius: 4px;
 		padding: 8px;
 		min-width: 150px;
 	}
 
-	.syncit-toggle,
-	.syncit-toggle:active {
+	.mirrors-toggle,
+	.mirrors-toggle:active {
 		width: 40px;
 		height: 40px;
 		line-height: 40px;
@@ -528,7 +528,7 @@
 		align-self: flex-end;
 	}
 
-	.syncit-app-control {
+	.mirrors-app-control {
 		position: absolute;
 		right: 1em;
 		bottom: 1em;
@@ -536,13 +536,13 @@
 		flex-direction: column;
 	}
 
-	.syncit-metric {
+	.mirrors-metric {
 		display: flex;
 		align-items: center;
 		margin-bottom: 8px;
 	}
 
-	.syncit-chart-title {
+	.mirrors-chart-title {
 		font-size: 13px;
 		line-height: 20px;
 		color: #3e4652;
@@ -550,7 +550,7 @@
 		margin-right: 8px;
 	}
 
-	.syncit-metric-line {
+	.mirrors-metric-line {
 		flex: 1;
 	}
 

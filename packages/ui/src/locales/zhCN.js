@@ -19,7 +19,7 @@ export const locale = {
       cancel: '取消',
       selectBlockArea: '选择屏蔽区域',
       area: '区域',
-      enableShare: '启用 Syncit 分享',
+      enableShare: '启用 Mirrors 分享',
       ready: '已启用，等待连接中',
       mouseSize: '镜像鼠标尺寸',
       small: '小',

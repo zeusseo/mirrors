@@ -42,7 +42,7 @@ export default [
       {
         file: pkg.unpkg,
         format: 'iife',
-        name: 'syncitCore',
+        name: 'mirrorsCore',
         plugins: sharedConfig.plugins.concat(terser()),
       },
       {

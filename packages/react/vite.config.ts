@@ -4,6 +4,12 @@ import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@mirrors/core': resolve(__dirname, '../core/src/index.ts'),
+      '@mirrors/transporter': resolve(__dirname, '../transporter/src/index.ts'),
+    },
+  },
   server: {
     port: 5200,
   },

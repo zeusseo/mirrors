@@ -1,9 +1,9 @@
 {
-  "name": "@syncit/transporter",
+  "name": "@mirrors/transporter",
   "version": "1.0.2",
-  "description": "syncit transporters",
+  "description": "mirrors transporters",
   "author": "Yanzhen Yu <yanzhen@smartx.com>",
-  "homepage": "https://github.com/rrweb-io/syncit#readme",
+  "homepage": "https://github.com/rrweb-io/mirrors#readme",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -24,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rrweb-io/syncit.git"
+    "url": "git+https://github.com/rrweb-io/mirrors.git"
   },
   "scripts": {
     "test": "jest",
@@ -34,7 +34,7 @@
     "prepublish": "yarn build && yarn typings"
   },
   "bugs": {
-    "url": "https://github.com/rrweb-io/syncit/issues"
+    "url": "https://github.com/rrweb-io/mirrors/issues"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.0.1",
@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@rrweb/types": "^2.0.0-alpha.20",
-    "@syncit/core": "^1.0.2",
+    "@mirrors/core": "^1.0.2",
     "agora-rtm-sdk": "latest",
     "socket.io-client": "^4.6.0"
   }

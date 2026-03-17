@@ -1,27 +1,27 @@
 # 使用指南
 
-**目前 Syncit 还处于早期开发阶段，使用方式可能随时发生变化。**
+**目前 Mirrors 还处于早期开发阶段，使用方式可能随时发生变化。**
 
 ## 快速开始
 
-使用 Syncit 需要安装 `@syncit/ui` 和 `@syncit/transporter`：
+使用 Mirrors 需要安装 `@mirrors/ui` 和 `@mirrors/transporter`：
 
 ```
-npm i @syncit/ui @syncit/transporter
+npm i @mirrors/ui @mirrors/transporter
 ```
 
-引入 Syncit，使用 local storage transporter 作为传输层：
+引入 Mirrors，使用 local storage transporter 作为传输层：
 
 ```js
-import syncit from '@syncit/ui';
-import '@syncit/ui/dist/style.css';
-import { LocalStorageTransporter } from '@syncit/transporter';
+import mirrors from '@mirrors/ui';
+import '@mirrors/ui/dist/style.css';
+import { LocalStorageTransporter } from '@mirrors/transporter';
 ```
 
-在源端初始化 Syncit：
+在源端初始化 Mirrors：
 
 ```js
-new syncit.Embed({
+new mirrors.Embed({
   target: document.body,
   props: {
     createTransporter({ role, uid }) {
@@ -34,10 +34,10 @@ new syncit.Embed({
 });
 ```
 
-在对端初始化 Syncit：
+在对端初始化 Mirrors：
 
 ```js
-new syncit.App({
+new mirrors.App({
   target: document.body,
   props: {
     createTransporter({ role, uid }) {
@@ -53,7 +53,7 @@ new syncit.App({
 使用不同的 transporter：
 
 ```js
-new syncit.App({
+new mirrors.App({
   target: document.body,
   props: {
     createTransporter({ role, uid }) {
@@ -69,7 +69,7 @@ new syncit.App({
 });
 ```
 
-Syncit 目前支持的 transporter 如下：
+Mirrors 目前支持的 transporter 如下：
 
 | 名称                    | 参数                                | 描述                                                                                    |
 | ----------------------- | ----------------------------------- | --------------------------------------------------------------------------------------- |

@@ -2,7 +2,7 @@
 </script>
 
 <style>
-  .syncit-panel {
+  .mirrors-panel {
     width: 280px;
     height: 380px;
     background: #fff;
@@ -15,6 +15,6 @@
   }
 </style>
 
-<div class="syncit-panel">
+<div class="mirrors-panel">
   <slot />
 </div>

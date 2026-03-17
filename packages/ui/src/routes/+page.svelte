@@ -6,11 +6,11 @@
 		src="https://user-images.githubusercontent.com/13651389/79969148-a9c57280-84c3-11ea-9063-cb8066a12c66.png"
 	/>
 
-	<h1>Welcome to Syncit UI Demo</h1>
+	<h1>Welcome to Mirrors UI Demo</h1>
 	<p>Please open two browser windows,<br />one for each of the following pages:</p>
 	<ul>
-		<li><a href="/embed/"><code>syncit.Embed</code> (Streamer)</a></li>
-		<li><a href="/app/"><code>syncit.App</code> (Co-browser)</a></li>
+		<li><a href="/embed/"><code>mirrors.Embed</code> (Streamer)</a></li>
+		<li><a href="/app/"><code>mirrors.App</code> (Co-browser)</a></li>
 	</ul>
 	<p class="hint">Requires Socket.IO relay server on <code>localhost:3100</code></p>
 </div>
