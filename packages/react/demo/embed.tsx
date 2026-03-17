@@ -214,6 +214,73 @@ function ColorMixer() {
   );
 }
 
+/* ───── 팝업 / 모달 ───── */
+function PopupDemo() {
+  const [modal, setModal] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
+  };
+
+  return (
+    <div style={card}>
+      <h3 style={cardTitle}>🪟 팝업 / 모달</h3>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <button onClick={() => setModal(true)} style={{ ...btnStyle, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+          📋 모달 열기
+        </button>
+        <button onClick={() => showToast('✅ 성공적으로 저장되었습니다!')} style={{ ...btnStyle, background: '#10b981' }}>
+          🔔 토스트 알림
+        </button>
+        <button onClick={() => setConfirm(true)} style={{ ...btnStyle, background: '#f59e0b' }}>
+          ❓ 확인 대화상자
+        </button>
+      </div>
+      {result && <div style={{ marginTop: 8, fontSize: 13, color: '#94a3b8' }}>결과: {result}</div>}
+
+      {/* 모달 오버레이 */}
+      {modal && (
+        <div style={overlayStyle} onClick={() => setModal(false)}>
+          <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 8px', fontSize: 20 }}>🎉 모달 팝업</h3>
+            <p style={{ color: '#94a3b8', fontSize: 14, marginBottom: 16 }}>
+              이 모달은 DOM 요소의 동적 추가/제거를 시연합니다.<br/>
+              미러(App) 화면에서도 동일하게 보입니다!
+            </p>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button onClick={() => setModal(false)} style={{ ...btnStyle, background: '#475569' }}>닫기</button>
+              <button onClick={() => { setModal(false); showToast('🎯 확인 완료!'); }} style={{ ...btnStyle, background: '#3b82f6' }}>확인</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 확인 대화상자 */}
+      {confirm && (
+        <div style={overlayStyle} onClick={() => { setConfirm(false); setResult('취소됨'); }}>
+          <div style={{ ...modalStyle, maxWidth: 360 }} onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ margin: '0 0 8px', fontSize: 18 }}>⚠️ 확인</h3>
+            <p style={{ color: '#94a3b8', fontSize: 14, marginBottom: 16 }}>정말 이 작업을 수행하시겠습니까?</p>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button onClick={() => { setConfirm(false); setResult('취소됨 ❌'); }} style={{ ...btnStyle, background: '#475569' }}>취소</button>
+              <button onClick={() => { setConfirm(false); setResult('승인됨 ✅'); showToast('✅ 승인 완료!'); }} style={{ ...btnStyle, background: '#ef4444' }}>승인</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 토스트 */}
+      {toast && (
+        <div style={toastStyle}>{toast}</div>
+      )}
+    </div>
+  );
+}
+
 /* ───── 메인 페이지 ───── */
 function EmbedPage() {
   const [themeIdx, setThemeIdx] = useState(0);
@@ -257,6 +324,7 @@ function EmbedPage() {
           <ColorMixer />
           <TodoList />
           <AnimWidgets />
+          <PopupDemo />
         </div>
 
         {/* 드래그 카드 */}
@@ -298,6 +366,26 @@ const sliderLabel: React.CSSProperties = {
 };
 const sliderStyle: React.CSSProperties = {
   width: '100%', height: 4, cursor: 'pointer',
+};
+const overlayStyle: React.CSSProperties = {
+  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+  background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  zIndex: 10000,
+};
+const modalStyle: React.CSSProperties = {
+  background: '#1e293b', borderRadius: 16, padding: '24px 28px',
+  maxWidth: 420, width: '90%', color: '#f1f5f9',
+  boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
+  border: '1px solid rgba(148,163,184,0.15)',
+};
+const toastStyle: React.CSSProperties = {
+  position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
+  background: '#1e293b', color: '#f1f5f9', padding: '12px 24px',
+  borderRadius: 12, fontSize: 14, fontWeight: 600,
+  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+  border: '1px solid rgba(148,163,184,0.15)',
+  zIndex: 10001,
 };
 
 const root = createRoot(document.getElementById('root')!);
