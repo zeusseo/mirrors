@@ -211,7 +211,11 @@
 			transporter.sendSourceReady();
 		});
 		transporter.on(TransporterEvents.Start, () => {
-			service.send('CONNECT');
+			if (service.state.matches('connected')) {
+				service.send('RECONNECT');
+			} else {
+				service.send('CONNECT');
+			}
 		});
 		transporter.on(TransporterEvents.AckRecord, ({ payload }) => {
 			buffer.delete(payload as TransportAckRecordEvent['payload']);

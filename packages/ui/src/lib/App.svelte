@@ -75,6 +75,11 @@
 		});
 
 		transporter.on(TransporterEvents.SourceReady, () => {
+			// Ignore if already connected — this SourceReady was triggered
+			// by another App joining the same room.
+			if (!current.matches('idle')) {
+				return;
+			}
 			service.send('SOURCE_READY');
 			replayer = new Replayer([], {
 				root: playerDom,

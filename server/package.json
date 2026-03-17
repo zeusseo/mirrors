@@ -1,0 +1,13 @@
+{
+  "name": "@syncit/server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Syncit Socket.IO relay server",
+  "main": "socketio-relay.js",
+  "scripts": {
+    "start": "node socketio-relay.js"
+  },
+  "dependencies": {
+    "socket.io": "^4.6.0"
+  }
+}

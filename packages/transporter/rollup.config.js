@@ -52,7 +52,7 @@ export default [
       },
     ],
   },
-  ...['base', 'local-storage', 'peerjs', 'agora-rtm'].map(name => ({
+  ...['base', 'agora-rtm', 'websocket', 'socketio'].map(name => ({
     ...sharedConfig,
     input: `src/${name}.ts`,
     output: [

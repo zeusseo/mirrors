@@ -12,6 +12,7 @@
 		<li><a href="/embed/"><code>syncit.Embed</code> (Streamer)</a></li>
 		<li><a href="/app/"><code>syncit.App</code> (Co-browser)</a></li>
 	</ul>
+	<p class="hint">Requires Socket.IO relay server on <code>localhost:3100</code></p>
 </div>
 
 <style>
@@ -39,5 +40,11 @@
 
 	a:hover {
 		text-decoration: underline;
+	}
+
+	.hint {
+		margin-top: 1em;
+		color: #999;
+		font-size: 13px;
 	}
 </style>

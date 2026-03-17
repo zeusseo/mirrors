@@ -6,12 +6,10 @@
 		target: document.body,
 		props: {
 			createTransporter({ uid }) {
-				return new syncitTransporter.PeerjsTransporter({
+				return new syncitTransporter.SocketIoTransporter({
 					uid,
 					role: 'embed',
-					peerHost: 'localhost',
-					peerPort: 9000,
-					peerPath: '/syncit',
+					url: 'http://localhost:3100',
 				});
 			}
 		}

@@ -1,6 +1,6 @@
 .PHONY: help install \
        build build-all build-core build-transporter build-ui \
-       dev peer start stop \
+       dev relay start stop \
        lint lint-core lint-transporter lint-ui check \
        test test-core test-transporter \
        clean rebuild
@@ -15,6 +15,7 @@ help: ## Show this help
 
 install: ## Install all dependencies
 	yarn install
+	cd server && npm install
 
 # ─── Build ───────────────────────────────────────────────────────
 
@@ -36,28 +37,28 @@ build-ui: build ## Build @syncit/ui (depends on core + transporter)
 dev: ## Start UI dev server (http://localhost:5173)
 	cd packages/ui && yarn dev
 
-peer: ## Start PeerJS signaling server (port 9000)
-	npx -y peer --port 9000 --path /syncit
+relay: ## Start Socket.IO relay server (port 3100)
+	cd server && node socketio-relay.js
 
-start: ## Start both PeerJS server and UI dev server
+start: ## Start both relay server and UI dev server
 	@mkdir -p $(PID_DIR)
-	@echo "Starting PeerJS server..."
-	@npx -y peer --port 9000 --path /syncit & echo $$! > $(PID_DIR)/peer.pid
-	@sleep 2
+	@echo "Starting Socket.IO relay server..."
+	@cd server && node socketio-relay.js & echo $$! > $(PID_DIR)/relay.pid
+	@sleep 1
 	@echo "Starting UI dev server..."
 	@cd packages/ui && yarn dev & echo $$! > $(PID_DIR)/dev.pid
 	@wait
 
-stop: ## Stop dev and PeerJS servers
-	@if [ -f $(PID_DIR)/peer.pid ]; then \
-		kill $$(cat $(PID_DIR)/peer.pid) 2>/dev/null; \
-		rm -f $(PID_DIR)/peer.pid; \
+stop: ## Stop dev and relay servers
+	@if [ -f $(PID_DIR)/relay.pid ]; then \
+		kill $$(cat $(PID_DIR)/relay.pid) 2>/dev/null; \
+		rm -f $(PID_DIR)/relay.pid; \
 	fi
 	@if [ -f $(PID_DIR)/dev.pid ]; then \
 		kill $$(cat $(PID_DIR)/dev.pid) 2>/dev/null; \
 		rm -f $(PID_DIR)/dev.pid; \
 	fi
-	@-pkill -f "peer --port 9000" 2>/dev/null; true
+	@-pkill -f "socketio-relay" 2>/dev/null; true
 	@-pkill -f "vite dev" 2>/dev/null; true
 	@echo "Servers stopped."
 

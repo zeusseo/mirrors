@@ -175,9 +175,9 @@ export const createEmbedService = (context: EmbedContext) => {
                 target: 'idle',
                 actions: ['stop'],
               },
-              CONNECT: {
+              RECONNECT: {
                 target: 'connected',
-                actions: ['connect'],
+                actions: ['reconnect'],
               },
             },
           },
@@ -209,6 +209,12 @@ export const createEmbedService = (context: EmbedContext) => {
               },
             };
           }),
+          reconnect(context) {
+            // Already recording — just take a fresh full snapshot so the
+            // new App gets the current DOM state without restarting the
+            // session (which would break all previously connected Apps).
+            context.record.takeFullSnapshot?.();
+          },
           stop(context) {
             const { stopRecordFn, transporter, buffer } = context;
             stopRecordFn?.();

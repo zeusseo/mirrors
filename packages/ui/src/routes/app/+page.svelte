@@ -7,12 +7,10 @@
 		props: {
 			bufferMs: 100,
 			createTransporter({ uid }) {
-				return new syncitTransporter.PeerjsTransporter({
+				return new syncitTransporter.SocketIoTransporter({
 					uid,
 					role: 'app',
-					peerHost: 'localhost',
-					peerPort: 9000,
-					peerPath: '/syncit',
+					url: 'http://localhost:3100',
 				});
 			}
 		}
