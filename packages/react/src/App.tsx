@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Replayer, EventType } from 'rrweb';
+import { Replayer } from 'rrweb';
+import 'rrweb/dist/style.css';
 import type { eventWithTime } from '@rrweb/types';
 import {
   TransporterEvents,
@@ -14,52 +15,60 @@ interface AppProps {
   bufferMs?: number;
 }
 
+/**
+ * Svelte App.svelte 로직을 그대로 React로 포팅.
+ * playerDom은 항상 DOM에 존재하는 단순 div (조건부 렌더링 없음).
+ */
 export function App({ createTransporter, bufferMs = 100 }: AppProps) {
   const [uid, setUid] = useState('');
-  const [state, setState] = useState<string>('idle');
-  const [isConnected, setIsConnected] = useState(false);
+  const [status, setStatus] = useState('idle');
   const playerRef = useRef<HTMLDivElement>(null);
-  const replayerRef = useRef<Replayer | null>(null);
-  const serviceRef = useRef<ReturnType<typeof createAppService> | null>(null);
-  const transporterRef = useRef<Transporter | null>(null);
+  const connectedRef = useRef(false);
 
   const connect = useCallback(() => {
-    if (!uid.trim()) return;
-    if (transporterRef.current) return;
+    if (!uid.trim() || connectedRef.current) return;
+    connectedRef.current = true;
+
+    console.log('[App] connecting with uid:', uid);
 
     const transporter = createTransporter({ uid, role: 'app' });
-    transporterRef.current = transporter;
+
+    let replayer: Replayer | null = null;
 
     const buffer = new MirrorBuffer<eventWithTime>({
       bufferMs,
       onChunk({ data }) {
-        replayerRef.current?.addEvent(data);
+        replayer?.addEvent(data);
       },
     });
 
     const service = createAppService(() => {
-      replayerRef.current?.pause();
+      replayer?.pause();
       if (playerRef.current) playerRef.current.innerHTML = '';
       buffer.reset();
     });
-    serviceRef.current = service;
 
     service.start();
     service.subscribe((s) => {
-      const val = s.value as string;
-      setState(val);
-      setIsConnected(val === 'connected');
+      setStatus(s.value as string);
     });
 
+    // SourceReady: Embed가 준비됨 → Replayer 생성 → Start 전송
     transporter.on(TransporterEvents.SourceReady, () => {
-      // 현재 상태를 service에서 직접 확인 (stale closure 방지)
+      console.log('[App] SourceReady, service state:', service.state.value);
       if (!service.state.matches('idle')) return;
 
       service.send('SOURCE_READY');
 
-      if (!playerRef.current) return;
-      const replayer = new Replayer([], {
-        root: playerRef.current,
+      const root = playerRef.current;
+      console.log('[App] playerRef.current:', root);
+      if (!root) {
+        console.error('[App] playerRef is null — cannot create Replayer!');
+        return;
+      }
+
+      replayer = new Replayer([], {
+        root,
         loadTimeout: 100,
         liveMode: true,
         insertStyleRules: [
@@ -69,166 +78,109 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
         showDebug: false,
         mouseTail: false,
       });
-      replayerRef.current = replayer;
+      console.log('[App] Replayer created, sending Start');
       transporter.sendStart();
+
+      // DEBUG: iframe 상태 주기적 체크
+      const debugInterval = setInterval(() => {
+        const iframes = root.querySelectorAll('iframe');
+        const wrapper = root.querySelector('.replayer-wrapper') as HTMLElement;
+        console.log('[App][DEBUG] iframes:', iframes.length,
+          'wrapper:', wrapper?.offsetWidth, 'x', wrapper?.offsetHeight,
+          'iframe size:', iframes[0]?.offsetWidth, 'x', iframes[0]?.offsetHeight,
+          'iframe body len:', iframes[0]?.contentDocument?.body?.innerHTML?.length
+        );
+      }, 2000);
     });
 
+    // SendRecord: 이벤트 수신 → 직접 Replayer에 전달 (MirrorBuffer 우회 테스트)
     transporter.on(TransporterEvents.SendRecord, (data) => {
       const { id, data: event, t } = (data as TransportSendRecordEvent).payload;
+      console.log('[App] SendRecord id:', id, 'type:', event.type, 'state:', service.state.value);
 
-      // 현재 상태를 service에서 직접 확인 (stale closure 방지)
       if (!service.state.matches('connected')) {
-        buffer.cursor = id - 1;
-        replayerRef.current?.startLive(event.timestamp - bufferMs);
+        replayer?.startLive(event.timestamp - bufferMs);
         service.send('FIRST_RECORD');
+        console.log('[App] FIRST_RECORD — startLive called');
       }
 
-      buffer.add({
-        id,
-        data: event,
-        t,
-      });
+      // 직접 addEvent 호출 (버퍼 우회)
+      replayer?.addEvent(event);
     });
 
     transporter.on(TransporterEvents.Stop, () => {
       service.send('STOP');
     });
 
+    // Login 후 MirrorReady 전송
     transporter.login().then(() => {
+      console.log('[App] logged in, sending MirrorReady');
       transporter.sendMirrorReady();
     });
   }, [uid, createTransporter, bufferMs]);
 
-  useEffect(() => {
-    return () => {
-      serviceRef.current?.stop();
-    };
-  }, []);
-
   return (
-    <div style={styles.container}>
-      <div style={styles.panel}>
-        <div style={styles.header}>
-          <span style={styles.dot(isConnected ? '#4ade80' : '#94a3b8')} />
-          <span style={styles.title}>Syncit Mirror</span>
-        </div>
+    <div>
+      {/* Player DIV — 항상 존재, Replayer가 여기에 iframe 생성 */}
+      <div ref={playerRef} />
 
-        {!transporterRef.current ? (
-          <div style={styles.body}>
+      {/* UI 패널 */}
+      <div style={panelStyle}>
+        {status === 'idle' ? (
+          <div style={{ display: 'flex', gap: 8 }}>
             <input
               type="text"
-              placeholder="Enter UID to connect"
+              placeholder="UID 입력"
               value={uid}
               onChange={(e) => setUid(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && connect()}
-              style={styles.input}
+              style={inputStyle}
             />
-            <button onClick={connect} style={styles.connectBtn}>
-              Connect
-            </button>
+            <button onClick={connect} style={btnStyle}>Connect</button>
           </div>
         ) : (
-          <div style={styles.body}>
-            <div style={styles.row}>
-              <span style={styles.label}>UID</span>
-              <code style={styles.uid}>{uid}</code>
-            </div>
-            <div style={styles.row}>
-              <span style={styles.label}>Status</span>
-              <span style={styles.status}>{state}</span>
-            </div>
+          <div>
+            <span style={{ color: status === 'connected' ? '#4ade80' : '#fbbf24' }}>●</span>
+            {' '}UID: <code>{uid}</code> | Status: {status}
           </div>
         )}
       </div>
-
-      <div ref={playerRef} style={styles.player} />
     </div>
   );
 }
 
-const styles: Record<string, any> = {
-  container: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  },
-  panel: {
-    background: '#1e293b',
-    borderRadius: 12,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-    color: '#f1f5f9',
-    minWidth: 300,
-    overflow: 'hidden',
-    marginBottom: 16,
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '12px 16px',
-    borderBottom: '1px solid #334155',
-  },
-  dot: (color: string) => ({
-    width: 10,
-    height: 10,
-    borderRadius: '50%',
-    background: color,
-    display: 'inline-block',
-  }),
-  title: {
-    fontWeight: 600,
-    fontSize: 14,
-  },
-  body: {
-    padding: '12px 16px',
-    display: 'flex',
-    flexDirection: 'column' as const,
-    gap: 8,
-  },
-  row: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-  },
-  label: {
-    fontSize: 12,
-    color: '#94a3b8',
-    minWidth: 40,
-  },
-  uid: {
-    fontSize: 13,
-    background: '#0f172a',
-    padding: '4px 8px',
-    borderRadius: 6,
-    letterSpacing: 1,
-  },
-  status: {
-    fontSize: 13,
-    textTransform: 'capitalize' as const,
-  },
-  input: {
-    padding: '8px 12px',
-    borderRadius: 8,
-    border: '1px solid #475569',
-    background: '#0f172a',
-    color: '#e2e8f0',
-    fontSize: 14,
-    outline: 'none',
-    width: '100%',
-    boxSizing: 'border-box' as const,
-  },
-  connectBtn: {
-    padding: '8px 16px',
-    borderRadius: 8,
-    border: 'none',
-    background: '#3b82f6',
-    color: '#fff',
-    fontWeight: 600,
-    fontSize: 14,
-    cursor: 'pointer',
-  },
-  player: {
-    background: '#0f172a',
-    borderRadius: 12,
-    overflow: 'hidden',
-    minHeight: 200,
-  },
+const panelStyle: React.CSSProperties = {
+  position: 'fixed',
+  bottom: 16,
+  right: 16,
+  zIndex: 99999,
+  background: '#1e293b',
+  color: '#f1f5f9',
+  padding: '12px 16px',
+  borderRadius: 10,
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  fontSize: 14,
+  boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+};
+
+const inputStyle: React.CSSProperties = {
+  padding: '6px 10px',
+  borderRadius: 6,
+  border: '1px solid #475569',
+  background: '#0f172a',
+  color: '#e2e8f0',
+  fontSize: 14,
+  outline: 'none',
+  width: 160,
+};
+
+const btnStyle: React.CSSProperties = {
+  padding: '6px 14px',
+  borderRadius: 6,
+  border: 'none',
+  background: '#3b82f6',
+  color: '#fff',
+  fontWeight: 600,
+  fontSize: 14,
+  cursor: 'pointer',
 };

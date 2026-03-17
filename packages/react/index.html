@@ -4,9 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Syncit React Demo</title>
+  <style>
+    body { margin: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .container { text-align: center; color: #f1f5f9; }
+    h1 { font-size: 36px; margin-bottom: 8px; }
+    p { color: #94a3b8; margin-bottom: 32px; }
+    .buttons { display: flex; gap: 16px; justify-content: center; }
+    a { display: inline-block; padding: 16px 32px; font-size: 18px; font-weight: 600; border-radius: 12px; text-decoration: none; color: #fff; }
+    .embed-btn { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+    .app-btn { background: linear-gradient(135deg, #10b981, #06b6d4); }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="module" src="/demo/main.tsx"></script>
+  <div class="container">
+    <h1>Syncit React Demo</h1>
+    <p>React에서의 실시간 화면 공유</p>
+    <div class="buttons">
+      <a href="/embed.html" class="embed-btn">📡 Embed (공유하기)</a>
+      <a href="/app.html" class="app-btn">📺 App (미러보기)</a>
+    </div>
+  </div>
 </body>
 </html>

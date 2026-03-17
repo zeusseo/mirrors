@@ -46,18 +46,22 @@ export function Embed({ createTransporter }: EmbedProps) {
     // Embed 상태 머신: idle → START → ready → CONNECT → connected
     // login 성공 후 바로 START를 보내서 ready 상태로 전환
     transporter.login().then(() => {
+      console.log('[Embed] login complete, sending START');
       service.send('START');
     });
 
     transporter.on(TransporterEvents.MirrorReady, () => {
+      console.log('[Embed] MirrorReady received, sending SourceReady');
       transporter.sendSourceReady();
     });
     transporter.on(TransporterEvents.Start, () => {
+      console.log('[Embed] Start received, state:', service.state.value);
       if (service.state.matches('connected')) {
         service.send('RECONNECT');
       } else {
         service.send('CONNECT');
       }
+      console.log('[Embed] after CONNECT, state:', service.state.value);
     });
     transporter.on(TransporterEvents.AckRecord, ({ payload }) => {
       buffer.delete(payload as TransportAckRecordEvent['payload']);
