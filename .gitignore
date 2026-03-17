@@ -1,0 +1,39 @@
+# local
+.vscode/*
+.pids
+!.vscode/syncit-monorepo.code-workspace
+
+# log
+*.log
+*.log.*
+
+# dependencies
+node_modules
+
+dist
+es
+typings
+tsconfig.tsbuildinfo
+target
+packages/core/lib
+packages/transporter/lib
+
+# test
+coverage
+
+packages/ui/public/build
+
+# website
+
+!website/*
+
+# `.yarn/install-state.gz` is an optimization file that you shouldn't ever have to commit. 
+# It simply stores the exact state of your project so that the next commands can boot without having to resolve your workspaces all over again.
+.yarn/install-state.gz
+
+# svelte-kit
+.svelte-kit
+
+# playwright
+playwright-report
+test-results
