@@ -42,6 +42,70 @@ function getUniqueSelector(el: Element): string {
   return parts.join(' > ');
 }
 
+/**
+ * Live thumbnail that clones the picked element into a scaled-down preview.
+ * Updates on DOM mutations and every 500ms to stay "live".
+ */
+function LiveThumbnail({ element }: { element: Element }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !element) return;
+
+    const THUMB_W = 220;
+
+    const refresh = () => {
+      const rect = element.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) return;
+
+      const scale = THUMB_W / rect.width;
+      const thumbH = rect.height * scale;
+
+      // Clone the element subtree
+      const clone = element.cloneNode(true) as HTMLElement;
+      clone.style.width = `${rect.width}px`;
+      clone.style.height = `${rect.height}px`;
+      clone.style.transformOrigin = 'top left';
+      clone.style.transform = `scale(${scale})`;
+      clone.style.pointerEvents = 'none';
+      clone.style.margin = '0';
+
+      container.style.width = `${THUMB_W}px`;
+      container.style.height = `${Math.min(thumbH, 140)}px`;
+      container.innerHTML = '';
+      container.appendChild(clone);
+    };
+
+    refresh();
+
+    // Re-clone on DOM mutations inside the element
+    const mo = new MutationObserver(refresh);
+    mo.observe(element, { childList: true, subtree: true, attributes: true, characterData: true });
+
+    // Periodic fallback for animations / timers
+    const timer = setInterval(refresh, 500);
+
+    return () => {
+      mo.disconnect();
+      clearInterval(timer);
+    };
+  }, [element]);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{
+        overflow: 'hidden',
+        borderRadius: 8,
+        border: '1px solid #334155',
+        background: '#0f172a',
+        marginTop: 4,
+      }}
+    />
+  );
+}
+
 interface EmbedProps {
   createTransporter: (opts: { role: string; uid: string }) => Transporter;
 }
@@ -50,7 +114,7 @@ export function Embed({ createTransporter }: EmbedProps) {
   const [uid] = useState(() => nanoid());
   const [state, setState] = useState<string>('idle');
   const serviceRef = useRef<ReturnType<typeof createEmbedService> | null>(null);
-  const { pickedEl, picking, startPicking, clearPicked, pickedLabel } = useElementPicker();
+  const { pickedEl, picking, startPicking, clearPicked } = useElementPicker();
 
   // Pending focus selector — set when element is picked but recording not yet active.
   // Will be sent as a custom event once recording starts (state becomes 'connected').
@@ -182,17 +246,20 @@ export function Embed({ createTransporter }: EmbedProps) {
 
           {/* ── Element Picker ── */}
           <div style={styles.divider} />
-          <div style={styles.row}>
-            <span style={styles.label}>Target</span>
-            {pickedEl ? (
-              <>
-                <code style={styles.pickedLabel}>{pickedLabel}</code>
-                <button onClick={clearPicked} style={styles.clearBtn}>✕</button>
-              </>
-            ) : (
+          {pickedEl ? (
+            <>
+              <div style={styles.row}>
+                <span style={styles.label}>Target</span>
+                <button onClick={clearPicked} style={styles.clearBtn}>✕ Clear</button>
+              </div>
+              <LiveThumbnail element={pickedEl} />
+            </>
+          ) : (
+            <div style={styles.row}>
+              <span style={styles.label}>Target</span>
               <span style={styles.targetAll}>전체 페이지</span>
-            )}
-          </div>
+            </div>
+          )}
           <div style={styles.row}>
             <button
               onClick={startPicking}
