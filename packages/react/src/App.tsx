@@ -73,10 +73,25 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
         liveMode: true,
         insertStyleRules: [
           '.syncit-embed { display: none !important }',
+          `.replayer-mouse {
+            width: 40px !important;
+            height: 40px !important;
+            filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.4));
+          }`,
+          `.replayer-mouse::after {
+            width: 32px !important;
+            height: 32px !important;
+            background: rgba(239, 68, 68, 0.35) !important;
+            border-radius: 50% !important;
+            transform: translate(-50%, -50%) !important;
+          }`,
         ],
         showWarning: false,
         showDebug: false,
-        mouseTail: false,
+        mouseTail: {
+          strokeStyle: 'rgba(239, 68, 68, 0.5)',
+          lineWidth: 3,
+        },
       });
       transporter.sendStart();
     });
