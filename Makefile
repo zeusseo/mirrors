@@ -1,6 +1,6 @@
 .PHONY: help install \
        build build-all build-core build-transporter build-ui \
-       dev relay start stop \
+       dev react-dev relay start stop \
        lint lint-core lint-transporter lint-ui check \
        test test-core test-transporter \
        clean rebuild
@@ -37,16 +37,25 @@ build-ui: build ## Build @syncit/ui (depends on core + transporter)
 dev: ## Start UI dev server (http://localhost:5173)
 	cd packages/ui && yarn dev
 
+react-dev: ## Start React demo + relay server (http://localhost:5200)
+	@mkdir -p $(PID_DIR)
+	@echo "Starting Socket.IO relay server..."
+	@cd server && node socketio-relay.js & echo $$! > $(PID_DIR)/relay.pid
+	@sleep 1
+	@cd packages/react && npx vite dev
+
 relay: ## Start Socket.IO relay server (port 3100)
 	cd server && node socketio-relay.js
 
-start: ## Start both relay server and UI dev server
+start: ## Start relay, UI dev, and React demo servers
 	@mkdir -p $(PID_DIR)
 	@echo "Starting Socket.IO relay server..."
 	@cd server && node socketio-relay.js & echo $$! > $(PID_DIR)/relay.pid
 	@sleep 1
 	@echo "Starting UI dev server..."
 	@cd packages/ui && yarn dev & echo $$! > $(PID_DIR)/dev.pid
+	@echo "Starting React demo server..."
+	@cd packages/react && npx vite dev & echo $$! > $(PID_DIR)/react.pid
 	@wait
 
 stop: ## Stop dev and relay servers
