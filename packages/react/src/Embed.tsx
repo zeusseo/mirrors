@@ -227,7 +227,7 @@ export function Embed({ createTransporter }: EmbedProps) {
   }, [uid]);
 
   return (
-    <div style={styles.container} data-mirrors-panel>
+    <div className="mirrors-embed" style={styles.container} data-mirrors-panel>
       <div style={styles.panel}>
         <div style={styles.header}>
           <span style={styles.dot(state === 'connected' ? '#4ade80' : state === 'ready' ? '#fbbf24' : '#94a3b8')} />
