@@ -78,19 +78,7 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
         showDebug: false,
         mouseTail: false,
       });
-      console.log('[App] Replayer created, sending Start');
       transporter.sendStart();
-
-      // DEBUG: iframe 상태 주기적 체크
-      const debugInterval = setInterval(() => {
-        const iframes = root.querySelectorAll('iframe');
-        const wrapper = root.querySelector('.replayer-wrapper') as HTMLElement;
-        console.log('[App][DEBUG] iframes:', iframes.length,
-          'wrapper:', wrapper?.offsetWidth, 'x', wrapper?.offsetHeight,
-          'iframe size:', iframes[0]?.offsetWidth, 'x', iframes[0]?.offsetHeight,
-          'iframe body len:', iframes[0]?.contentDocument?.body?.innerHTML?.length
-        );
-      }, 2000);
     });
 
     // SendRecord: 이벤트 수신 → 버퍼에 추가 (Svelte와 동일 로직)
