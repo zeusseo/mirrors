@@ -93,19 +93,20 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
       }, 2000);
     });
 
-    // SendRecord: 이벤트 수신 → 직접 Replayer에 전달 (MirrorBuffer 우회 테스트)
+    // SendRecord: 이벤트 수신 → 버퍼에 추가 (Svelte와 동일 로직)
     transporter.on(TransporterEvents.SendRecord, (data) => {
       const { id, data: event, t } = (data as TransportSendRecordEvent).payload;
-      console.log('[App] SendRecord id:', id, 'type:', event.type, 'state:', service.state.value);
 
       if (!service.state.matches('connected')) {
-        replayer?.startLive(event.timestamp - bufferMs);
+        // Align cursor to current session's record IDs
+        buffer.cursor = id - 1;
+        replayer?.startLive(event.timestamp - buffer.bufferMs);
         service.send('FIRST_RECORD');
-        console.log('[App] FIRST_RECORD — startLive called');
       }
 
-      // 직접 addEvent 호출 (버퍼 우회)
-      replayer?.addEvent(event);
+      const chunk = { id, data: event, t: event.timestamp };
+      buffer.addWithCheck(chunk);
+      transporter.ackRecord(id);
     });
 
     transporter.on(TransporterEvents.Stop, () => {
