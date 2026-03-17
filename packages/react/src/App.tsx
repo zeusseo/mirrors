@@ -93,6 +93,7 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
           lineWidth: 3,
         },
       });
+
       transporter.sendStart();
     });
 

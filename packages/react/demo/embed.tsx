@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Embed } from '../src/Embed';
+import { useMirrorSafeAnimation } from '../src/useMirrorSafeAnimation';
 import { SocketIoTransporter } from '@syncit/transporter';
 
 const RELAY_URL = 'http://localhost:3100';
@@ -159,15 +160,19 @@ function DraggableCard() {
   );
 }
 
-/* ───── 애니메이션 위젯 ───── */
+/* ───── 애니메이션 위젯 (useMirrorSafeAnimation 사용) ───── */
 function AnimWidgets() {
   const [pulse, setPulse] = useState(false);
+  const spinStyle = useMirrorSafeAnimation('rotate', { duration: 800 });
+  const bounceStyle = useMirrorSafeAnimation('bounce', { duration: 1000 });
+  const gearStyle = useMirrorSafeAnimation('rotate', { duration: 3000 });
+
   return (
     <div style={card}>
       <h3 style={cardTitle}>✨ 애니메이션</h3>
       <div style={{ display: 'flex', gap: 24, alignItems: 'center', justifyContent: 'center', padding: '16px 0', flexWrap: 'wrap' }}>
         {/* 스피너 */}
-        <div style={{ width: 40, height: 40, border: '4px solid #1e293b', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <div style={{ width: 40, height: 40, border: '4px solid #1e293b', borderTopColor: '#3b82f6', borderRadius: '50%', ...spinStyle }} />
         {/* 펄스 버튼 */}
         <button
           onClick={() => { setPulse(true); setTimeout(() => setPulse(false), 600); }}
@@ -181,9 +186,9 @@ function AnimWidgets() {
           {pulse ? '💥 Boom!' : '🎯 Click me'}
         </button>
         {/* 바운스 이모지 */}
-        <div style={{ fontSize: 32, animation: 'bounce 1s ease infinite' }}>🚀</div>
+        <div style={{ fontSize: 32, ...bounceStyle }}>🚀</div>
         {/* 회전 이모지 */}
-        <div style={{ fontSize: 32, animation: 'spin 3s linear infinite' }}>⚙️</div>
+        <div style={{ fontSize: 32, ...gearStyle }}>⚙️</div>
       </div>
     </div>
   );
@@ -289,9 +294,13 @@ function EmbedPage() {
       {/* 글로벌 키프레임 */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        @keyframes blink { 50% { opacity: 0 } }
         @keyframes spin { to { transform: rotate(360deg) } }
         @keyframes bounce { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-14px) } }
+        @keyframes blink { 50% { opacity: 0 } }
+        .anim-spin { animation: spin 0.8s linear infinite !important; }
+        .anim-spin-slow { animation: spin 3s linear infinite !important; }
+        .anim-bounce { animation: bounce 1s ease infinite !important; }
+        .anim-blink { animation: blink 0.8s step-end infinite !important; }
         * { box-sizing: border-box; }
         body { margin: 0; }
       `}</style>
