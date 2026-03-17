@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { Replayer, EventType, pack } from 'rrweb';
+	import { Replayer, EventType } from 'rrweb';
 	import type { customEvent, eventWithTime } from '@rrweb/types';
 	import { quintOut } from 'svelte/easing';
 	import { scale } from 'svelte/transition';

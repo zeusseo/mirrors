@@ -31,7 +31,7 @@
 		"konva": "^7.2.2",
 		"nanoid": "^4.0.1",
 		"pdfjs-dist": "^3.4.0",
-		"rrweb": "^2.0.0-alpha.5"
+		"rrweb": "^2.0.0-alpha.20"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
@@ -50,9 +50,9 @@
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
 		"tslib": "^2.4.1",
-		"typescript": "^4.9.3",
+		"typescript": "^5.7.0",
 		"vite": "^4.1.4",
-		"vite-plugin-dts": "^2.1.0",
+		"vite-plugin-dts": "^3.9.0",
 		"vitest": "^0.29.2"
 	},
 	"main": "./dist/ui.js",
