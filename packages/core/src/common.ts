@@ -269,7 +269,15 @@ export enum CustomEventTags {
   EndPaint = 'EndPaint',
   OpenPDF = 'OpenPDF',
   ClosePDF = 'ClosePDF',
+  FocusTarget = 'FocusTarget',
+  ClearFocusTarget = 'ClearFocusTarget',
 }
+
+/** Payload for FocusTarget custom event */
+export type FocusTargetPayload = {
+  /** Unique CSS selector to find the target element in the replayed DOM */
+  selector: string;
+};
 
 export type DataPoint = {
   x: number;
