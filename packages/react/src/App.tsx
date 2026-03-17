@@ -152,6 +152,7 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
           `.replayer-mouse {
             width: 40px !important;
             height: 40px !important;
+            transition: left 0.1s linear, top 0.1s linear !important;
             filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)) drop-shadow(0 0 20px rgba(239, 68, 68, 0.4));
           }`,
           `.replayer-mouse::after {
