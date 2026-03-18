@@ -25,6 +25,9 @@ function Demo() {
           <button onClick={() => setMode('app')} style={styles.appBtn}>
             📺 App (미러보기)
           </button>
+          <button onClick={() => window.location.href = '/player.html'} style={styles.playerBtn}>
+            🎬 Player (녹화 재생)
+          </button>
         </div>
       </div>
     );
@@ -97,6 +100,17 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 12,
     border: 'none',
     background: 'linear-gradient(135deg, #10b981, #06b6d4)',
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'transform 0.2s',
+  },
+  playerBtn: {
+    padding: '16px 32px',
+    fontSize: 18,
+    fontWeight: 600,
+    borderRadius: 12,
+    border: 'none',
+    background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
     color: '#fff',
     cursor: 'pointer',
     transition: 'transform 0.2s',
