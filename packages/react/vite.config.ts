@@ -19,6 +19,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         embed: resolve(__dirname, 'embed.html'),
         app: resolve(__dirname, 'app.html'),
+        player: resolve(__dirname, 'player.html'),
       },
     },
   },

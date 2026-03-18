@@ -12,6 +12,7 @@ import {
   type FocusTargetPayload,
 } from '@mirrors/core';
 import { Canvas, type CanvasHandle } from './Canvas';
+import { handlePaintingEvent, type PaintingConfig } from './useCustomEventHandler';
 
 interface AppProps {
   createTransporter: (opts: { role: string; uid: string }) => Transporter;
@@ -31,7 +32,7 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
 
   // ── Painting (Whiteboard) ──
   const [painting, setPainting] = useState(false);
-  const [paintingConfig, setPaintingConfig] = useState({
+  const [paintingConfig, setPaintingConfig] = useState<PaintingConfig>({
     stroke: '#df4b26',
     strokeWidth: 5,
     mode: 'brush',
@@ -119,37 +120,11 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
           }
 
           // ── Painting / Whiteboard ──
-          switch (customData.tag) {
-            case CustomEventTags.StartPaint:
-              setPainting(true);
-              break;
-            case CustomEventTags.EndPaint:
-              setPainting(false);
-              break;
-            case CustomEventTags.SetPaintingConfig:
-              setPaintingConfig(
-                (customData.payload as { config: typeof paintingConfig }).config,
-              );
-              break;
-            case CustomEventTags.StartLine:
-              // Defer to next frame so Canvas has time to mount
-              requestAnimationFrame(() => canvasRef.current?.startLine());
-              break;
-            case CustomEventTags.EndLine:
-              canvasRef.current?.endLine();
-              break;
-            case CustomEventTags.DrawLine:
-              canvasRef.current?.setPoints(
-                (customData.payload as { points: number[] }).points,
-              );
-              break;
-            case CustomEventTags.Highlight:
-              canvasRef.current?.highlight(
-                (customData.payload as { left: number; top: number }).left,
-                (customData.payload as { left: number; top: number }).top,
-              );
-              break;
-          }
+          handlePaintingEvent(customData.tag, customData.payload, {
+            setPainting,
+            setPaintingConfig,
+            canvasRef,
+          });
         }
 
         // Re-apply focus on DOM mutation events (type 3 = IncrementalSnapshot)

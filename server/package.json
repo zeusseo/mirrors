@@ -2,12 +2,15 @@
   "name": "@mirrors/server",
   "version": "1.0.0",
   "private": true,
-  "description": "Mirrors Socket.IO relay server",
+  "description": "Mirrors Socket.IO relay server with session recording",
   "main": "socketio-relay.js",
   "scripts": {
     "start": "node socketio-relay.js"
   },
   "dependencies": {
+    "better-sqlite3": "^11.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "socket.io": "^4.6.0"
   }
 }
