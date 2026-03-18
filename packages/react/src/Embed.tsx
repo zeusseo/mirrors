@@ -12,6 +12,13 @@ import {
 } from '@mirrors/core';
 import { customAlphabet } from 'nanoid';
 import { useElementPicker } from './useElementPicker';
+import { Canvas } from './Canvas';
+
+interface PaintingConfig {
+  stroke: string;
+  strokeWidth: number;
+  mode: string;
+}
 
 const nanoid = customAlphabet('1234567890abcdef', 10);
 
@@ -120,6 +127,40 @@ export function Embed({ createTransporter }: EmbedProps) {
   // Will be sent as a custom event once recording starts (state becomes 'connected').
   const pendingFocusSelectorRef = useRef<string | null>(null);
   const isConnectedRef = useRef(false);
+
+  // ── Painting (Whiteboard) ──
+  const [painting, setPainting] = useState(false);
+  const [paintingConfig, setPaintingConfig] = useState<PaintingConfig>({
+    stroke: '#df4b26',
+    strokeWidth: 5,
+    mode: 'brush',
+  });
+
+  const togglePaint = useCallback(() => {
+    setPainting((prev) => {
+      const next = !prev;
+      if (next) {
+        addCustomEvent(CustomEventTags.StartPaint, undefined);
+        addCustomEvent(CustomEventTags.SetPaintingConfig, {
+          config: paintingConfig,
+        });
+      } else {
+        addCustomEvent(CustomEventTags.EndPaint, undefined);
+      }
+      return next;
+    });
+  }, [paintingConfig]);
+
+  const updatePaintingConfig = useCallback(
+    <K extends keyof PaintingConfig>(key: K, value: PaintingConfig[K]) => {
+      setPaintingConfig((prev) => {
+        const next = { ...prev, [key]: value };
+        addCustomEvent(CustomEventTags.SetPaintingConfig, { config: next });
+        return next;
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
     const transporter = createTransporter({ uid, role: 'embed' });
@@ -272,8 +313,79 @@ export function Embed({ createTransporter }: EmbedProps) {
               {picking ? '🎯 요소를 클릭하세요…' : '🎯 Select Element'}
             </button>
           </div>
+
+          {/* ── Whiteboard / Painting ── */}
+          {state === 'connected' && (
+            <>
+              <div style={styles.divider} />
+              <div style={styles.row}>
+                <button
+                  onClick={togglePaint}
+                  style={{
+                    ...styles.pickerBtn,
+                    ...(painting
+                      ? { background: 'rgba(239, 68, 68, 0.2)', borderColor: '#ef4444', color: '#fca5a5' }
+                      : {}),
+                  }}
+                >
+                  {painting ? '🎨 그리기 종료' : '🎨 Paint'}
+                </button>
+              </div>
+              {painting && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={styles.row}>
+                    <span style={{ ...styles.label, minWidth: 50 }}>Color</span>
+                    <input
+                      type="color"
+                      value={paintingConfig.stroke}
+                      onChange={(e) => updatePaintingConfig('stroke', e.target.value)}
+                      style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}
+                    />
+                    <code style={{ fontSize: 11, color: '#64748b' }}>{paintingConfig.stroke}</code>
+                  </div>
+                  <div style={styles.row}>
+                    <span style={{ ...styles.label, minWidth: 50 }}>Width</span>
+                    <input
+                      type="range"
+                      min={3}
+                      max={20}
+                      value={paintingConfig.strokeWidth}
+                      onChange={(e) => updatePaintingConfig('strokeWidth', Number(e.target.value))}
+                      style={{ flex: 1, cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: 12, color: '#94a3b8', minWidth: 20 }}>{paintingConfig.strokeWidth}</span>
+                  </div>
+                  <div style={styles.row}>
+                    <span style={{ ...styles.label, minWidth: 50 }}>Mode</span>
+                    <select
+                      value={paintingConfig.mode}
+                      onChange={(e) => updatePaintingConfig('mode', e.target.value)}
+                      style={{
+                        flex: 1, padding: '4px 8px', borderRadius: 6,
+                        border: '1px solid #475569', background: '#0f172a',
+                        color: '#e2e8f0', fontSize: 12, cursor: 'pointer',
+                      }}
+                    >
+                      <option value="brush">🖌️ Brush</option>
+                      <option value="eraser">🧹 Eraser</option>
+                      <option value="highlight">💡 Highlight</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
+      {/* ── Canvas Overlay ── */}
+      {painting && (
+        <Canvas
+          role="master"
+          mode={paintingConfig.mode}
+          stroke={paintingConfig.stroke}
+          strokeWidth={paintingConfig.strokeWidth}
+        />
+      )}
     </div>
   );
 }
@@ -293,6 +405,8 @@ const styles: Record<string, any> = {
     color: '#f1f5f9',
     minWidth: 260,
     overflow: 'hidden',
+    position: 'relative' as const,
+    zIndex: 99999,
   },
   header: {
     display: 'flex',

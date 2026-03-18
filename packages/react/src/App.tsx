@@ -11,6 +11,7 @@ import {
   type TransportSendRecordEvent,
   type FocusTargetPayload,
 } from '@mirrors/core';
+import { Canvas, type CanvasHandle } from './Canvas';
 
 interface AppProps {
   createTransporter: (opts: { role: string; uid: string }) => Transporter;
@@ -27,6 +28,15 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
   const playerRef = useRef<HTMLDivElement>(null);
   const connectedRef = useRef(false);
   const replayerRef = useRef<Replayer | null>(null);
+
+  // ── Painting (Whiteboard) ──
+  const [painting, setPainting] = useState(false);
+  const [paintingConfig, setPaintingConfig] = useState({
+    stroke: '#df4b26',
+    strokeWidth: 5,
+    mode: 'brush',
+  });
+  const canvasRef = useRef<CanvasHandle>(null);
 
   /**
    * FocusTarget 수신 시: Replayer iframe 내에서 해당 요소를 찾아
@@ -95,21 +105,54 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
       onChunk({ data }) {
         replayer?.addEvent(data);
 
-        // Check for custom FocusTarget events
-        if (data.type === 5 /* CustomEvent */) {
+        // Check for custom events (type 5 = CustomEvent)
+        if (data.type === 5) {
           const customData = (data as customEvent).data;
+
+          // ── FocusTarget ──
           if (customData.tag === CustomEventTags.FocusTarget) {
             focusSelector = (customData.payload as FocusTargetPayload).selector;
-            // Defer to allow rrweb to process the event first
             requestAnimationFrame(() => applyFocusTarget(focusSelector!));
           } else if (customData.tag === CustomEventTags.ClearFocusTarget) {
             focusSelector = null;
             clearFocusTarget();
           }
+
+          // ── Painting / Whiteboard ──
+          switch (customData.tag) {
+            case CustomEventTags.StartPaint:
+              setPainting(true);
+              break;
+            case CustomEventTags.EndPaint:
+              setPainting(false);
+              break;
+            case CustomEventTags.SetPaintingConfig:
+              setPaintingConfig(
+                (customData.payload as { config: typeof paintingConfig }).config,
+              );
+              break;
+            case CustomEventTags.StartLine:
+              // Defer to next frame so Canvas has time to mount
+              requestAnimationFrame(() => canvasRef.current?.startLine());
+              break;
+            case CustomEventTags.EndLine:
+              canvasRef.current?.endLine();
+              break;
+            case CustomEventTags.DrawLine:
+              canvasRef.current?.setPoints(
+                (customData.payload as { points: number[] }).points,
+              );
+              break;
+            case CustomEventTags.Highlight:
+              canvasRef.current?.highlight(
+                (customData.payload as { left: number; top: number }).left,
+                (customData.payload as { left: number; top: number }).top,
+              );
+              break;
+          }
         }
 
         // Re-apply focus on DOM mutation events (type 3 = IncrementalSnapshot)
-        // to keep the clip position correct as the page changes
         if (focusSelector && data.type === 3) {
           requestAnimationFrame(() => applyFocusTarget(focusSelector!));
         }
@@ -206,6 +249,17 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
     <div>
       {/* Player DIV — 항상 존재, Replayer가 여기에 iframe 생성 */}
       <div ref={playerRef} />
+
+      {/* Canvas overlay (whiteboard) */}
+      {painting && (
+        <Canvas
+          ref={canvasRef}
+          role="slave"
+          mode={paintingConfig.mode}
+          stroke={paintingConfig.stroke}
+          strokeWidth={paintingConfig.strokeWidth}
+        />
+      )}
 
       {/* UI 패널 */}
       <div style={panelStyle}>
