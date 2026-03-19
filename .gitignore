@@ -37,6 +37,6 @@ packages/ui/public/build
 # playwright
 playwright-report
 test-resultsserver/recordings.db
-test-resultsserver/recordings.db-shm
-test-resultsserver/recordings.db-wal
+server/recordings.db-shm
+server/recordings.db-wal
 *.db
