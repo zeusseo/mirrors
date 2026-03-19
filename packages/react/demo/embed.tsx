@@ -219,6 +219,268 @@ function ColorMixer() {
   );
 }
 
+/* ───── Shadow DOM 테스트 위젯 ───── */
+function ShadowDomCard() {
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host || host.shadowRoot) return;
+
+    const shadow = host.attachShadow({ mode: 'open' });
+
+    shadow.innerHTML = `
+      <style>
+        :host {
+          display: block;
+        }
+        .shadow-inner {
+          font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          color: #f1f5f9;
+        }
+        .shadow-title {
+          font-size: 16px;
+          font-weight: 700;
+          margin: 0 0 12px;
+        }
+        .shadow-badge {
+          display: inline-block;
+          background: linear-gradient(135deg, #6366f1, #a855f7);
+          color: #fff;
+          font-size: 10px;
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 999px;
+          margin-left: 8px;
+          vertical-align: middle;
+        }
+        .shadow-section {
+          margin-bottom: 14px;
+        }
+        .shadow-section-title {
+          font-size: 12px;
+          color: #94a3b8;
+          margin-bottom: 6px;
+        }
+        .counter-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .counter-btn {
+          width: 32px;
+          height: 32px;
+          border: none;
+          border-radius: 8px;
+          background: #334155;
+          color: #e2e8f0;
+          font-size: 18px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        .counter-btn:hover {
+          background: #475569;
+        }
+        .counter-val {
+          font-size: 28px;
+          font-weight: 800;
+          font-variant-numeric: tabular-nums;
+          min-width: 40px;
+          text-align: center;
+          background: linear-gradient(135deg, #a855f7, #ec4899);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .shadow-input {
+          width: 100%;
+          padding: 8px 12px;
+          border-radius: 10px;
+          border: 1px solid #334155;
+          background: #0f172a;
+          color: #e2e8f0;
+          font-size: 14px;
+          outline: none;
+          box-sizing: border-box;
+          transition: border-color 0.2s;
+        }
+        .shadow-input:focus {
+          border-color: #8b5cf6;
+        }
+        .echo-text {
+          margin-top: 6px;
+          font-size: 13px;
+          color: #a78bfa;
+          min-height: 20px;
+          word-break: break-all;
+        }
+        .color-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .color-swatch {
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+          transition: all 0.3s;
+          box-shadow: 0 0 16px rgba(139, 92, 246, 0.3);
+        }
+        .color-input {
+          border: none;
+          background: none;
+          width: 40px;
+          height: 40px;
+          cursor: pointer;
+          padding: 0;
+        }
+        .color-hex {
+          font-family: monospace;
+          font-size: 13px;
+          color: #94a3b8;
+        }
+        .toggle-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .toggle-switch {
+          position: relative;
+          width: 44px;
+          height: 24px;
+          cursor: pointer;
+        }
+        .toggle-switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .toggle-track {
+          position: absolute;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: #334155;
+          border-radius: 999px;
+          transition: background 0.3s;
+        }
+        .toggle-switch input:checked + .toggle-track {
+          background: #8b5cf6;
+        }
+        .toggle-knob {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 20px;
+          height: 20px;
+          background: #fff;
+          border-radius: 50%;
+          transition: transform 0.3s;
+        }
+        .toggle-switch input:checked ~ .toggle-knob {
+          transform: translateX(20px);
+        }
+        .toggle-label {
+          font-size: 13px;
+          color: #cbd5e1;
+        }
+        .glow-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          display: inline-block;
+          transition: all 0.3s;
+        }
+      </style>
+      <div class="shadow-inner">
+        <div class="shadow-title">👻 Shadow DOM <span class="shadow-badge">SHADOW</span></div>
+
+        <div class="shadow-section">
+          <div class="shadow-section-title">카운터</div>
+          <div class="counter-row">
+            <button class="counter-btn" id="s-dec">−</button>
+            <span class="counter-val" id="s-count">0</span>
+            <button class="counter-btn" id="s-inc">+</button>
+          </div>
+        </div>
+
+        <div class="shadow-section">
+          <div class="shadow-section-title">텍스트 입력</div>
+          <input class="shadow-input" id="s-input" placeholder="Shadow DOM 안에서 타이핑..." />
+          <div class="echo-text" id="s-echo"></div>
+        </div>
+
+        <div class="shadow-section">
+          <div class="shadow-section-title">색상 선택</div>
+          <div class="color-row">
+            <div class="color-swatch" id="s-swatch" style="background: #8b5cf6;"></div>
+            <input type="color" class="color-input" id="s-color" value="#8b5cf6" />
+            <span class="color-hex" id="s-hex">#8b5cf6</span>
+          </div>
+        </div>
+
+        <div class="shadow-section">
+          <div class="shadow-section-title">토글 스위치</div>
+          <div class="toggle-row">
+            <label class="toggle-switch">
+              <input type="checkbox" id="s-toggle" />
+              <span class="toggle-track"></span>
+              <span class="toggle-knob"></span>
+            </label>
+            <span class="toggle-label" id="s-toggle-label">OFF</span>
+            <span class="glow-dot" id="s-glow" style="background: #475569;"></span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // ── 이벤트 바인딩 ──
+    let count = 0;
+    const countEl = shadow.getElementById('s-count')!;
+    shadow.getElementById('s-dec')!.addEventListener('click', () => {
+      count--;
+      countEl.textContent = String(count);
+    });
+    shadow.getElementById('s-inc')!.addEventListener('click', () => {
+      count++;
+      countEl.textContent = String(count);
+    });
+
+    const inputEl = shadow.getElementById('s-input') as HTMLInputElement;
+    const echoEl = shadow.getElementById('s-echo')!;
+    inputEl.addEventListener('input', () => {
+      echoEl.textContent = inputEl.value ? `→ ${inputEl.value}` : '';
+    });
+
+    const colorInput = shadow.getElementById('s-color') as HTMLInputElement;
+    const swatchEl = shadow.getElementById('s-swatch')!;
+    const hexEl = shadow.getElementById('s-hex')!;
+    colorInput.addEventListener('input', () => {
+      swatchEl.style.background = colorInput.value;
+      swatchEl.style.boxShadow = `0 0 16px ${colorInput.value}60`;
+      hexEl.textContent = colorInput.value;
+    });
+
+    const toggleInput = shadow.getElementById('s-toggle') as HTMLInputElement;
+    const toggleLabel = shadow.getElementById('s-toggle-label')!;
+    const glowDot = shadow.getElementById('s-glow')!;
+    toggleInput.addEventListener('change', () => {
+      toggleLabel.textContent = toggleInput.checked ? 'ON' : 'OFF';
+      glowDot.style.background = toggleInput.checked ? '#22c55e' : '#475569';
+      glowDot.style.boxShadow = toggleInput.checked ? '0 0 8px #22c55e' : 'none';
+    });
+  }, []);
+
+  return (
+    <div
+      ref={hostRef}
+      style={{
+        ...card,
+        border: '1px solid rgba(139, 92, 246, 0.3)',
+        boxShadow: '0 4px 24px rgba(139, 92, 246, 0.15)',
+      }}
+    />
+  );
+}
+
 /* ───── 팝업 / 모달 ───── */
 function PopupDemo() {
   const [modal, setModal] = useState(false);
@@ -332,6 +594,7 @@ function EmbedPage() {
           <Counter />
           <ColorMixer />
           <TodoList />
+          <ShadowDomCard />
           <AnimWidgets />
           <PopupDemo />
         </div>
