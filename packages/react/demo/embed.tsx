@@ -219,6 +219,86 @@ function ColorMixer() {
   );
 }
 
+/* ───── Fabric.js CDN 로더 ───── */
+const FABRIC_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js';
+let fabricLoadPromise: Promise<void> | null = null;
+function loadFabric(): Promise<void> {
+  if ((window as any).fabric) return Promise.resolve();
+  if (fabricLoadPromise) return fabricLoadPromise;
+  fabricLoadPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = FABRIC_CDN;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Failed to load Fabric.js'));
+    document.head.appendChild(script);
+  });
+  return fabricLoadPromise;
+}
+
+/** Fabric Canvas 초기화 헬퍼 — canvas 요소에 Fabric을 바인딩 */
+function initFabricCanvas(canvasEl: HTMLCanvasElement, width: number, height: number) {
+  const F = (window as any).fabric;
+  const fc = new F.Canvas(canvasEl, { width, height, backgroundColor: '#0f172a', selection: true });
+
+  // 기본 도형 추가
+  fc.add(new F.Rect({ left: 20, top: 20, width: 60, height: 60, fill: '#3b82f6', rx: 8, ry: 8 }));
+  fc.add(new F.Circle({ left: 120, top: 30, radius: 30, fill: '#8b5cf6' }));
+  fc.add(new F.Triangle({ left: 60, top: 90, width: 50, height: 50, fill: '#10b981' }));
+  fc.add(new F.IText('Hello', { left: 140, top: 90, fontSize: 18, fill: '#f1f5f9', fontFamily: 'Inter, sans-serif' }));
+  fc.renderAll();
+  return fc;
+}
+
+/* ───── Fabric Canvas 카드 ───── */
+function FabricCanvasCard() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fcRef = useRef<any>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    loadFabric().then(() => {
+      if (!canvasRef.current || fcRef.current) return;
+      fcRef.current = initFabricCanvas(canvasRef.current, 260, 170);
+      setReady(true);
+    });
+    return () => { fcRef.current?.dispose(); };
+  }, []);
+
+  const addShape = () => {
+    if (!fcRef.current) return;
+    const F = (window as any).fabric;
+    const shapes = [
+      () => new F.Rect({ left: Math.random() * 180, top: Math.random() * 120, width: 40 + Math.random() * 30, height: 40 + Math.random() * 30, fill: `hsl(${Math.random() * 360}, 70%, 60%)`, rx: 6, ry: 6 }),
+      () => new F.Circle({ left: Math.random() * 180, top: Math.random() * 120, radius: 15 + Math.random() * 20, fill: `hsl(${Math.random() * 360}, 70%, 60%)` }),
+      () => new F.Triangle({ left: Math.random() * 180, top: Math.random() * 120, width: 40, height: 40, fill: `hsl(${Math.random() * 360}, 70%, 60%)` }),
+    ];
+    fcRef.current.add(shapes[Math.floor(Math.random() * shapes.length)]());
+    fcRef.current.renderAll();
+  };
+
+  const clearAll = () => {
+    if (!fcRef.current) return;
+    fcRef.current.clear();
+    fcRef.current.backgroundColor = '#0f172a';
+    fcRef.current.renderAll();
+  };
+
+  return (
+    <div style={card}>
+      <h3 style={cardTitle}>🎨 Fabric Canvas</h3>
+      <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #334155' }}>
+        <canvas ref={canvasRef} />
+      </div>
+      {ready && (
+        <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <button onClick={addShape} style={{ ...btnStyle, flex: 1, fontSize: 13 }}>＋ 도형 추가</button>
+          <button onClick={clearAll} style={{ ...btnStyle, flex: 1, fontSize: 13, background: '#475569' }}>🗑 초기화</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ───── Shadow DOM 테스트 위젯 ───── */
 function ShadowDomCard() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -429,6 +509,17 @@ function ShadowDomCard() {
             <span class="glow-dot" id="s-glow" style="background: #475569;"></span>
           </div>
         </div>
+
+        <div class="shadow-section">
+          <div class="shadow-section-title">Fabric Canvas (in Shadow)</div>
+          <div style="border-radius: 8px; overflow: hidden; border: 1px solid #334155;">
+            <canvas id="s-fabric" width="220" height="130"></canvas>
+          </div>
+          <div style="display: flex; gap: 6px; margin-top: 8px;">
+            <button class="counter-btn" id="s-fab-add" style="flex: 1; width: auto; font-size: 12px;">＋ 도형</button>
+            <button class="counter-btn" id="s-fab-clear" style="flex: 1; width: auto; font-size: 12px;">🗑</button>
+          </div>
+        </div>
       </div>
     `;
 
@@ -466,6 +557,27 @@ function ShadowDomCard() {
       toggleLabel.textContent = toggleInput.checked ? 'ON' : 'OFF';
       glowDot.style.background = toggleInput.checked ? '#22c55e' : '#475569';
       glowDot.style.boxShadow = toggleInput.checked ? '0 0 8px #22c55e' : 'none';
+    });
+
+    // ── Shadow 내부 Fabric Canvas ──
+    loadFabric().then(() => {
+      const sFabricEl = shadow.getElementById('s-fabric') as HTMLCanvasElement;
+      if (!sFabricEl) return;
+      const sfc = initFabricCanvas(sFabricEl, 220, 130);
+      shadow.getElementById('s-fab-add')?.addEventListener('click', () => {
+        const F = (window as any).fabric;
+        const shapes = [
+          () => new F.Rect({ left: Math.random() * 150, top: Math.random() * 80, width: 30 + Math.random() * 20, height: 30 + Math.random() * 20, fill: `hsl(${Math.random() * 360}, 70%, 60%)`, rx: 4, ry: 4 }),
+          () => new F.Circle({ left: Math.random() * 150, top: Math.random() * 80, radius: 12 + Math.random() * 15, fill: `hsl(${Math.random() * 360}, 70%, 60%)` }),
+        ];
+        sfc.add(shapes[Math.floor(Math.random() * shapes.length)]());
+        sfc.renderAll();
+      });
+      shadow.getElementById('s-fab-clear')?.addEventListener('click', () => {
+        sfc.clear();
+        sfc.backgroundColor = '#0f172a';
+        sfc.renderAll();
+      });
     });
   }, []);
 
@@ -594,6 +706,7 @@ function EmbedPage() {
           <Counter />
           <ColorMixer />
           <TodoList />
+          <FabricCanvasCard />
           <ShadowDomCard />
           <AnimWidgets />
           <PopupDemo />

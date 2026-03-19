@@ -201,9 +201,11 @@ export const createEmbedService = (context: EmbedContext) => {
                 transporter.sendRecord(buffer.buffer[id]);
               },
               inlineStylesheet: false,
+              recordCanvas: true,
               sampling: {
                 mousemove: 50,       // capture mouse every 50ms (default 500ms)
                 mousemoveCallback: 50,
+                canvas: 2,           // capture canvas at 2 fps
               },
             });
             return {

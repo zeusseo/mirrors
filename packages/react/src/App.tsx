@@ -163,6 +163,7 @@ export function App({ createTransporter, bufferMs = 100 }: AppProps) {
         root,
         loadTimeout: 100,
         liveMode: true,
+        UNSAFE_replayCanvas: true,
         insertStyleRules: [
           '.mirrors-embed { display: none !important }',
           // Hide the Embed panel in mirror view
