@@ -205,7 +205,7 @@ export const createEmbedService = (context: EmbedContext) => {
               sampling: {
                 mousemove: 50,       // capture mouse every 50ms (default 500ms)
                 mousemoveCallback: 50,
-                canvas: 2,           // capture canvas at 2 fps
+                canvas: 'all',       // intercept all canvas draw calls (fps mode can't find Shadow DOM canvases)
               },
             });
             return {
