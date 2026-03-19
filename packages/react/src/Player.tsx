@@ -98,6 +98,7 @@ export function Player({ apiUrl }: PlayerProps) {
 
         const replayer = new Replayer(events, {
           root: playerRef.current,
+          UNSAFE_replayCanvas: true,
           insertStyleRules: [
             '.mirrors-embed { display: none !important }',
             '[data-mirrors-panel] { display: none !important }',
